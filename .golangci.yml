@@ -1,0 +1,19 @@
+linters:
+  enable:
+    - staticcheck
+    - unconvert
+    - gofmt
+    - revive
+    - ineffassign
+    - vet
+    - unused
+    - misspell
+    - bodyclose
+    - errcheck
+    - goimports
+    - prealloc
+
+run:
+  deadline: 2m
+  skip-dirs:
+    - vendor
