@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/milosgajdos/go-embedding/openai"
+	"github.com/milosgajdos/go-embeddings/openai"
 )
 
 var (
