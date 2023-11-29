@@ -110,8 +110,8 @@ func ToEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
 	return nil, ErrInValidData
 }
 
-// CreateEmbeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) CreateEmbeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
+// Embeddings returns embeddings for every object in EmbeddingRequest.
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
 	u, err := url.Parse(c.baseURL + "/embeddings")
 	if err != nil {
 		return nil, err

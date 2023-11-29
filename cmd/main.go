@@ -35,7 +35,7 @@ func main() {
 		EncodingFormat: openai.EncodingFormat(encoding),
 	}
 
-	embs, err := c.CreateEmbeddings(context.Background(), embReq)
+	embs, err := c.Embeddings(context.Background(), embReq)
 	if err != nil {
 		log.Fatal(err)
 	}
