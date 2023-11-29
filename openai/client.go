@@ -12,7 +12,9 @@ import (
 
 const (
 	// BaseURL is OpenAI HTTP API base URL.
-	BaseURL = "https://api.openai.com/v1"
+	BaseURL = "https://api.openai.com"
+	// EmbedAPIVersion is the latest stable embedding API version.
+	EmbedAPIVersion = "v1"
 	// Org header
 	OrgHeader = "OpenAI-Organization"
 )
@@ -21,6 +23,7 @@ const (
 type Client struct {
 	apiKey  string
 	baseURL string
+	version string
 	orgID   string
 	hc      *http.Client
 }
@@ -34,6 +37,7 @@ func NewClient() (*Client, error) {
 	return &Client{
 		apiKey:  os.Getenv("OPENAI_API_KEY"),
 		baseURL: BaseURL,
+		version: EmbedAPIVersion,
 		orgID:   "",
 		hc:      &http.Client{},
 	}, nil
@@ -48,6 +52,12 @@ func (c *Client) WithAPIKey(apiKey string) *Client {
 // WithBaseURL sets the API base URL.
 func (c *Client) WithBaseURL(baseURL string) *Client {
 	c.baseURL = baseURL
+	return c
+}
+
+// WithVersion sets the API version.
+func (c *Client) WithVersion(version string) *Client {
+	c.version = version
 	return c
 }
 

@@ -19,11 +19,11 @@ type Usage struct {
 	TotalTokens  int `json:"total_tokens"`
 }
 
-// Embedding is openai API vector embedding.
+// Embedding is openai API embedding.
 type Embedding struct {
-	Object    string    `json:"object"`
-	Index     int       `json:"index"`
-	Embedding []float64 `json:"embedding"`
+	Object string    `json:"object"`
+	Index  int       `json:"index"`
+	Vector []float64 `json:"vector"`
 }
 
 // EmbeddingString is base64 encoded embedding.
@@ -87,9 +87,9 @@ func ToEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
 				return nil, err
 			}
 			emb := &Embedding{
-				Object:    d.Object,
-				Index:     d.Index,
-				Embedding: floats,
+				Object: d.Object,
+				Index:  d.Index,
+				Vector: floats,
 			}
 			embs = append(embs, emb)
 		}
@@ -98,9 +98,9 @@ func ToEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
 		embs := make([]*Embedding, 0, len(e.Data))
 		for _, d := range e.Data {
 			emb := &Embedding{
-				Object:    d.Object,
-				Index:     d.Index,
-				Embedding: d.Embedding,
+				Object: d.Object,
+				Index:  d.Index,
+				Vector: d.Embedding,
 			}
 			embs = append(embs, emb)
 		}
@@ -112,7 +112,7 @@ func ToEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
 func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
-	u, err := url.Parse(c.baseURL + "/embeddings")
+	u, err := url.Parse(c.baseURL + "/" + c.version + "/embeddings")
 	if err != nil {
 		return nil, err
 	}
