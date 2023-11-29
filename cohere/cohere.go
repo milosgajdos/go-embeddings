@@ -1,6 +1,6 @@
 package cohere
 
-// Model is embedding model.
+// Model is an embedding model.
 type Model string
 
 const (
@@ -13,7 +13,7 @@ const (
 	MultiLingV2      Model = "embed-multilingual-v2.0"
 )
 
-// InputType is embedding input type.
+// InputType is an embedding input type.
 type InputType string
 
 const (
@@ -24,6 +24,8 @@ const (
 )
 
 // Truncate controls input truncating.
+// It controls how the API handles inputs
+// longer than the maximum token length (recommended: <512)
 type Truncate string
 
 const (

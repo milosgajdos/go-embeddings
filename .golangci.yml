@@ -12,6 +12,15 @@ linters:
     - errcheck
     - goimports
     - prealloc
+    - gosec
+    - goconst
+    - gosimple
+    - errname
+    - gocritic
+    - tparallel
+    - tenv
+    - unconvert
+    - whitespace
 
 run:
   deadline: 2m

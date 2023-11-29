@@ -13,15 +13,15 @@ import (
 )
 
 const (
-	// BaseURL is Vertex AI HTTP API base URL
+	// BaseURL is the Google Vertex AI HTTP API base URL
 	BaseURL = "https://us-central1-aiplatform.googleapis.com/v1/projects"
-	// ModelURI is Vertex AI HTTP API model URI.
+	// ModelURI is the Google Vertex AI HTTP API model URI.
 	ModelURI = "locations/us-central1/publishers/google/models"
 	// EmbedAction is embedding API action.
 	EmbedAction = ":predict"
 )
 
-// Client is vertex AI HTTP API client.
+// Client is a Google Vertex AI HTTP API client.
 type Client struct {
 	token     string
 	tokenSrc  oauth2.TokenSource
@@ -32,40 +32,46 @@ type Client struct {
 }
 
 // NewClient creates a new HTTP client and returns it.
-// It reads the Google API token from VERTEXAI_TOKEN env var
-// just like the project ID is read from GOOGLE_PROJECT_ID env var
-// and uses the default Go http.Client.
-// You can override the default options by using the
-// client methods.
-func NewClient() (*Client, error) {
+// By default it reads the following env vars:
+// * VERTEXAI_TOKEN for setting the API token
+// * VERTEXAI_MODEL_ID for settings the API model ID
+// * GOOGLE_PROJECT_ID for setting the Google Project ID
+// It uses the default Go http.Client for making API requests
+// to the BaseURL. You can override the default client options
+// via the client methods.
+// NOTE: you must provide either the token or the token source
+func NewClient() *Client {
 	return &Client{
 		token:     os.Getenv("VERTEXAI_TOKEN"),
 		modelID:   os.Getenv("VERTEXAI_MODEL_ID"),
 		projectID: os.Getenv("GOOGLE_PROJECT_ID"),
 		baseURL:   BaseURL,
 		hc:        &http.Client{},
-	}, nil
+	}
 }
 
-// WithToken sets the API key.
+// WithToken sets the API token.
 func (c *Client) WithToken(token string) *Client {
 	c.token = token
 	return c
 }
 
 // WithTokenSrc sets the API token source.
+// The source can be used for generating the API token
+// if no token has been set.
 func (c *Client) WithTokenSrc(ts oauth2.TokenSource) *Client {
 	c.tokenSrc = ts
 	return c
 }
 
-// WithProjectID sets the project ID.
+// WithProjectID sets the Google Project ID.
 func (c *Client) WithProjectID(id string) *Client {
 	c.projectID = id
 	return c
 }
 
-// WithModelID sets the model ID.
+// WithModelID sets the Vertex AI model ID.
+// https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning
 func (c *Client) WithModelID(id string) *Client {
 	c.modelID = id
 	return c

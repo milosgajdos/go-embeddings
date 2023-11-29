@@ -4,12 +4,20 @@ package vertexai
 type Model string
 
 const (
-	EmbedGecko      Model = "textembedding-gecko"
-	EmbedGeckoV2    Model = "textembedding-gecko@002"
+	// EmbedGeckoV* are English language embedding models
+	// See for the information about the latest available version
+	// https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning#latest-version
+	EmbedGeckoV1     Model = "textembedding-gecko@001"
+	EmbedGeckoV2     Model = "textembedding-gecko@002"
+	EmbedGeckoLatest Model = "textembedding-gecko@latest"
+	// EmbedMultiGecko is a multilanguage embeddings model
 	EmbedMultiGecko Model = "multimodalembedding@001"
 )
 
 // TaskType is embedding task type.
+// It can be used to improve the embedding quality
+// when targeting a specific task.
+// See: https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings
 type TaskType string
 
 const (

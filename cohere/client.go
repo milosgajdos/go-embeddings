@@ -25,18 +25,17 @@ type Client struct {
 	hc      *http.Client
 }
 
-// NewClient creates a new HTTP client and returns it.
-// It reads the Cohere API key from COHERE_API_KEY env var
-// and uses the default Go http.Client.
-// You can override the default options by using the
-// client methods.
-func NewClient() (*Client, error) {
+// NewClient creates a new HTTP API client and returns it.
+// By default it reads the Cohere API key from COHERE_API_KEY
+// env var and uses the default Go http.Client for making API requests.
+// You can override the default options via the client methods.
+func NewClient() *Client {
 	return &Client{
 		apiKey:  os.Getenv("COHERE_API_KEY"),
 		baseURL: BaseURL,
 		version: EmbedAPIVersion,
 		hc:      &http.Client{},
-	}, nil
+	}
 }
 
 // WithAPIKey sets the API key.

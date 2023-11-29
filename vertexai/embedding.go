@@ -57,7 +57,9 @@ type Statistics struct {
 	Truncated  bool `json:"truncated"`
 }
 
-func ToEmbeddings(r io.Reader) ([]*Embedding, error) {
+// toEmbeddings decodes the raw API response,
+// parses it into a slice of embeddings and returns it.
+func toEmbeddings(r io.Reader) ([]*Embedding, error) {
 	var resp EmbedddingResponse
 	if err := json.NewDecoder(r).Decode(&resp); err != nil {
 		return nil, err
@@ -99,5 +101,5 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 	}
 	defer resp.Body.Close()
 
-	return ToEmbeddings(resp.Body)
+	return toEmbeddings(resp.Body)
 }

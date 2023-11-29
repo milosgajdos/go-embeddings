@@ -11,6 +11,8 @@ const (
 type EncodingFormat string
 
 const (
-	EncodingFloat  EncodingFormat = "float"
+	EncodingFloat EncodingFormat = "float"
+	// EncodingBase64 makes OpenAI API return embeddings
+	// encoded as base64 string
 	EncodingBase64 EncodingFormat = "base64"
 )

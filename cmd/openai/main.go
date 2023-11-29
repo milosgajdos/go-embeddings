@@ -24,10 +24,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	c, err := openai.NewClient()
-	if err != nil {
-		log.Fatal(err)
-	}
+	c := openai.NewClient()
 
 	embReq := &openai.EmbeddingRequest{
 		Input:          input,

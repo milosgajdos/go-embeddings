@@ -5,3 +5,10 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This project provides an implementation for fetching embeddings from various LLMs.
+
+Currently supported APIs:
+* [x] [OpenAI](https://platform.openai.com/docs/api-reference/embeddings)
+* [x] [Cohere AI](https://docs.cohere.com/reference/embed)
+* [x] [Google Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
+
+There are also simple command line tools provided by this project that let you query the APIs for text embeddings passed in via cli flags.

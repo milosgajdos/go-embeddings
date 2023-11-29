@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-// Embedding is cohere API vector embedding.
+// Embedding is vector embedding.
 type Embedding struct {
 	Vector []float64 `json:"vector"`
 }
@@ -22,13 +22,13 @@ type EmbeddingRequest struct {
 	Truncate  Truncate  `json:"truncate,omitempty"`
 }
 
-// EmbedddingResponse received from API endpoint.
+// EmbedddingResponse received from API.
 type EmbedddingResponse struct {
 	Embeddings [][]float64 `json:"embeddings"`
 	Meta       *Meta       `json:"meta,omitempty"`
 }
 
-// Meta stores API response metadata
+// Meta stores API response metadata.
 type Meta struct {
 	APIVersion *APIVersion `json:"api_version,omitempty"`
 }
@@ -38,7 +38,9 @@ type APIVersion struct {
 	Version string `json:"version"`
 }
 
-func ToEmbeddings(r io.Reader) ([]*Embedding, error) {
+// toEmbeddings decodes the raw API response,
+// parses it into a slice of embeddings and returns it.
+func toEmbeddings(r io.Reader) ([]*Embedding, error) {
 	var resp EmbedddingResponse
 	if err := json.NewDecoder(r).Decode(&resp); err != nil {
 		return nil, err
@@ -80,5 +82,5 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 	}
 	defer resp.Body.Close()
 
-	return ToEmbeddings(resp.Body)
+	return toEmbeddings(resp.Body)
 }

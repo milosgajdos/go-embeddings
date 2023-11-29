@@ -26,10 +26,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	c, err := cohere.NewClient()
-	if err != nil {
-		log.Fatal(err)
-	}
+	c := cohere.NewClient()
 
 	embReq := &cohere.EmbeddingRequest{
 		Texts:     []string{input},

@@ -29,6 +29,7 @@ type Embedding struct {
 // EmbeddingString is base64 encoded embedding.
 type EmbeddingString string
 
+// Decode decodes base64 encoded string into a slice of floats.
 func (s EmbeddingString) Decode() ([]float64, error) {
 	decoded, err := base64.StdEncoding.DecodeString(string(s))
 	if err != nil {
@@ -57,14 +58,15 @@ type EmbeddingRequest struct {
 	EncodingFormat EncodingFormat `json:"encoding_format,omitempty"`
 }
 
-// Data is used for deserializing response data.
+// Data stores the raw embeddings.
+// It's used when deserializing data from API.
 type Data[T any] struct {
 	Object    string `json:"object"`
 	Index     int    `json:"index"`
 	Embedding T      `json:"embedding"`
 }
 
-// EmbeddingResponse is the API response from a Create embeddings request.
+// EmbeddingResponse is the API response.
 type EmbeddingResponse[T any] struct {
 	Object string    `json:"object"`
 	Data   []Data[T] `json:"data"`
@@ -72,7 +74,9 @@ type EmbeddingResponse[T any] struct {
 	Usage  Usage     `json:"usage"`
 }
 
-func ToEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
+// toEmbeddings decodes the raw API response,
+// parses it into a slice of embeddings and returns it.
+func toEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
 	data := new(T)
 	if err := json.NewDecoder(resp).Decode(data); err != nil {
 		return nil, err
@@ -137,10 +141,10 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 
 	switch embReq.EncodingFormat {
 	case EncodingBase64:
-		return ToEmbeddings[EmbeddingResponse[EmbeddingString]](resp.Body)
+		return toEmbeddings[EmbeddingResponse[EmbeddingString]](resp.Body)
 	case EncodingFloat:
-		return ToEmbeddings[EmbeddingResponse[[]float64]](resp.Body)
+		return toEmbeddings[EmbeddingResponse[[]float64]](resp.Body)
 	}
 
-	return nil, fmt.Errorf("unknown encoding: %v", embReq.EncodingFormat)
+	return nil, ErrUnsupportedEncoding
 }

@@ -13,13 +13,13 @@ import (
 const (
 	// BaseURL is OpenAI HTTP API base URL.
 	BaseURL = "https://api.openai.com"
-	// EmbedAPIVersion is the latest stable embedding API version.
+	// EmbedAPIVersion is the latest stable embeddings API version.
 	EmbedAPIVersion = "v1"
-	// Org header
+	// OrgHeader is an Organization header
 	OrgHeader = "OpenAI-Organization"
 )
 
-// Client is OpenAI HTTP API client.
+// Client is an OpenAI HTTP API client.
 type Client struct {
 	apiKey  string
 	baseURL string
@@ -28,19 +28,18 @@ type Client struct {
 	hc      *http.Client
 }
 
-// NewClient creates a new HTTP client and returns it.
-// It reads the OpenAI API key from OPENAI_API_KEY env var
-// and uses the default Go http.Client.
-// You can override the default options by using the
-// client methods.
-func NewClient() (*Client, error) {
+// NewClient creates a new HTTP API client and returns it.
+// By default it reads the OpenAI API key from OPENAI_API_KEY
+// env var and uses the default Go http.Client for making API requests.
+// You can override the default options via the client methods.
+func NewClient() *Client {
 	return &Client{
 		apiKey:  os.Getenv("OPENAI_API_KEY"),
 		baseURL: BaseURL,
 		version: EmbedAPIVersion,
 		orgID:   "",
 		hc:      &http.Client{},
-	}, nil
+	}
 }
 
 // WithAPIKey sets the API key.

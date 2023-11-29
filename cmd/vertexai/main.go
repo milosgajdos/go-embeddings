@@ -36,12 +36,9 @@ func main() {
 		log.Fatalf("token source: %v", err)
 	}
 
-	c, err := vertexai.NewClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-	c.WithTokenSrc(ts)
-	c.WithModelID(model)
+	c := vertexai.NewClient().
+		WithTokenSrc(ts).
+		WithModelID(model)
 
 	embReq := &vertexai.EmbeddingRequest{
 		Instances: []vertexai.Instance{

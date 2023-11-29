@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// ErrMissingTokenSource is returned when the API client is missing a token source.
 	ErrMissingTokenSource = errors.New("missing access token source")
 )
 
@@ -16,6 +17,7 @@ const (
 )
 
 // GetToken returns access token from the given token source.
+// It returns error is tokenSrc is nil instead of panicking.
 func GetToken(tokenSrc oauth2.TokenSource) (string, error) {
 	if tokenSrc != nil {
 		token, err := tokenSrc.Token()
