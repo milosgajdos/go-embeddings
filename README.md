@@ -12,3 +12,16 @@ Currently supported APIs:
 * [x] [Google Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
 
 There are also simple command line tools provided by this project that let you query the APIs for text embeddings passed in via cli flags.
+
+## nix
+
+The project provides a simple `nix` flake tha leverages [gomod2nix](https://github.com/nix-community/gomod2nix) for consistent Go environments and builds.
+
+To get started just run
+```shell
+nix develop
+```
+
+And you'll be dropped into development shell.
+
+**NOTE:** `gomod2nix` vendors dependencies into `nix` store so every time you add a new dependency you must run `gomod2nix generate` that updates `gomod2nix.toml`
