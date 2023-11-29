@@ -5,6 +5,7 @@ type Model string
 
 const (
 	EmbedGecko      Model = "textembedding-gecko"
+	EmbedGeckoV2    Model = "textembedding-gecko@002"
 	EmbedMultiGecko Model = "multimodalembedding@001"
 )
 

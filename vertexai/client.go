@@ -3,10 +3,13 @@ package vertexai
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -21,6 +24,7 @@ const (
 // Client is vertex AI HTTP API client.
 type Client struct {
 	token     string
+	tokenSrc  oauth2.TokenSource
 	projectID string
 	modelID   string
 	baseURL   string
@@ -46,6 +50,12 @@ func NewClient() (*Client, error) {
 // WithToken sets the API key.
 func (c *Client) WithToken(token string) *Client {
 	c.token = token
+	return c
+}
+
+// WithTokenSrc sets the API token source.
+func (c *Client) WithTokenSrc(ts oauth2.TokenSource) *Client {
+	c.tokenSrc = ts
 	return c
 }
 
@@ -113,6 +123,14 @@ func (c *Client) newRequest(ctx context.Context, method, url string, body io.Rea
 		setOption(req)
 	}
 
+	if c.token == "" {
+		var err error
+		c.token, err = GetToken(c.tokenSrc)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 	if body != nil {
@@ -135,9 +153,10 @@ func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
 	}
 	defer resp.Body.Close()
 
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, APIError{Status: resp.Status, Message: err.Error()}
+	var apiErr APIError
+	if err := json.NewDecoder(resp.Body).Decode(&apiErr); err != nil {
+		return nil, err
 	}
-	return nil, APIError{Status: resp.Status, Message: string(b)}
+
+	return nil, apiErr
 }

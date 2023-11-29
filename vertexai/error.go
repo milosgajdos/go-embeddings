@@ -3,8 +3,11 @@ package vertexai
 import "encoding/json"
 
 type APIError struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	RespError struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Status  string `json:"status"`
+	} `json:"error"`
 }
 
 func (e APIError) Error() string {

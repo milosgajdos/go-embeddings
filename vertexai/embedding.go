@@ -21,19 +21,19 @@ type EmbeddingRequest struct {
 	Params    Params     `json:"parameters"`
 }
 
-// Params are additional API request parameters passed via body.
-type Params struct {
-	// If set to false, text that exceeds the token limit (3.072)
-	// causes the request to fail. The default value is true
-	AutoTruncate bool `json:"autoTruncate"`
-}
-
 // NOTE: Title is only valid with TaskType set to RetrDocTask
 // https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings#api_changes_to_models_released_on_or_after_august_2023
 type Instance struct {
 	TaskType TaskType `json:"task_type"`
 	Title    string   `json:"title,omitempty"`
 	Content  string   `json:"content"`
+}
+
+// Params are additional API request parameters passed via body.
+type Params struct {
+	// If set to false, text that exceeds the token limit (3.072)
+	// causes the request to fail. The default value is true
+	AutoTruncate bool `json:"autoTruncate"`
 }
 
 // EmbedddingResponse received from API endpoint.
