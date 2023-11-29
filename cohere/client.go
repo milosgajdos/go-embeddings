@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	// BaseURL is OpenAI HTTP API base URL.
+	// BaseURL is Cohere HTTP API base URL.
 	BaseURL = "https://api.cohere.ai"
 	// EmbedAPIVersion is the latest stable embedding API version.
 	EmbedAPIVersion = "v1"
 )
 
-// Client is OpenAI HTTP API client.
+// Client is Cohere HTTP API client.
 type Client struct {
 	apiKey  string
 	baseURL string
