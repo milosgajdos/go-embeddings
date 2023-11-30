@@ -35,7 +35,12 @@ func main() {
 		Truncate:  cohere.Truncate(truncate),
 	}
 
-	embs, err := c.Embeddings(context.Background(), embReq)
+	embResp, err := c.Embeddings(context.Background(), embReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	embs, err := cohere.ToEmbeddings(embResp)
 	if err != nil {
 		log.Fatal(err)
 	}

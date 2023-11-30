@@ -4,15 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"net/url"
-)
 
-// Embedding is cohere API vector embedding.
-type Embedding struct {
-	Vector []float64 `json:"vector"`
-}
+	"github.com/milosgajdos/go-embeddings"
+)
 
 // EmbeddingRequest sent to API endpoint.
 // https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings#generative-ai-get-text-embedding-drest
@@ -57,18 +53,13 @@ type Statistics struct {
 	Truncated  bool `json:"truncated"`
 }
 
-// toEmbeddings decodes the raw API response,
-// parses it into a slice of embeddings and returns it.
-func toEmbeddings(r io.Reader) ([]*Embedding, error) {
-	var resp EmbedddingResponse
-	if err := json.NewDecoder(r).Decode(&resp); err != nil {
-		return nil, err
-	}
-	embs := make([]*Embedding, 0, len(resp.Predictions))
-	for _, p := range resp.Predictions {
+// ToEmbeddings converts the API response to embeddings object.
+func ToEmbeddings(e *EmbedddingResponse) ([]*embeddings.Embedding, error) {
+	embs := make([]*embeddings.Embedding, 0, len(e.Predictions))
+	for _, p := range e.Predictions {
 		floats := make([]float64, len(p.Embeddings.Values))
 		copy(floats, p.Embeddings.Values)
-		emb := &Embedding{
+		emb := &embeddings.Embedding{
 			Vector: floats,
 		}
 		embs = append(embs, emb)
@@ -77,7 +68,7 @@ func toEmbeddings(r io.Reader) ([]*Embedding, error) {
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*EmbedddingResponse, error) {
 	u, err := url.Parse(c.baseURL + "/" + c.projectID + "/" + ModelURI + "/" + c.modelID + EmbedAction)
 	if err != nil {
 		return nil, err
@@ -101,5 +92,10 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 	}
 	defer resp.Body.Close()
 
-	return toEmbeddings(resp.Body)
+	e := new(EmbedddingResponse)
+	if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
+		return nil, err
+	}
+
+	return e, nil
 }

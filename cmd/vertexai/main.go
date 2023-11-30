@@ -53,7 +53,12 @@ func main() {
 		},
 	}
 
-	embs, err := c.Embeddings(context.Background(), embReq)
+	embResp, err := c.Embeddings(context.Background(), embReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	embs, err := vertexai.ToEmbeddings(embResp)
 	if err != nil {
 		log.Fatal(err)
 	}
