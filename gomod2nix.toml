@@ -1,0 +1,24 @@
+schema = 3
+
+[mod]
+  [mod."cloud.google.com/go/compute"]
+    version = "v1.20.1"
+    hash = "sha256-HQvSLdoSagQsuqOb/D9+xMc8nE9Y44Z30rQgd2AGEr8="
+  [mod."cloud.google.com/go/compute/metadata"]
+    version = "v0.2.3"
+    hash = "sha256-kYB1FTQRdTDqCqJzSU/jJYbVUGyxbkASUKbEs36FUyU="
+  [mod."github.com/golang/protobuf"]
+    version = "v1.5.3"
+    hash = "sha256-svogITcP4orUIsJFjMtp+Uv1+fKJv2Q5Zwf2dMqnpOQ="
+  [mod."golang.org/x/net"]
+    version = "v0.19.0"
+    hash = "sha256-3M5rKEvJx4cO/q+06cGjR5sxF5JpnUWY0+fQttrWdT4="
+  [mod."golang.org/x/oauth2"]
+    version = "v0.15.0"
+    hash = "sha256-exA/abu6WOR7Cwqa41LpnTD2xQNRZMYU5CnBKvXHx8Y="
+  [mod."google.golang.org/appengine"]
+    version = "v1.6.7"
+    hash = "sha256-zIxGRHiq4QBvRqkrhMGMGCaVL4iM4TtlYpAi/hrivS4="
+  [mod."google.golang.org/protobuf"]
+    version = "v1.31.0"
+    hash = "sha256-UdIk+xRaMfdhVICvKRk1THe3R1VU+lWD8hqoW/y8jT0="
