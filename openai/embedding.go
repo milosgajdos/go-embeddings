@@ -13,6 +13,7 @@ import (
 	"net/url"
 
 	"github.com/milosgajdos/go-embeddings"
+	"github.com/milosgajdos/go-embeddings/request"
 )
 
 // EmbeddingString is base64 encoded embedding.
@@ -156,7 +157,14 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*Emb
 		return nil, err
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPost, u.String(), body)
+	options := []request.Option{
+		request.WithBearer(c.apiKey),
+	}
+	if c.orgID != "" {
+		options = append(options, request.WithSetHeader(OrgHeader, c.orgID))
+	}
+
+	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)
 	if err != nil {
 		return nil, err
 	}

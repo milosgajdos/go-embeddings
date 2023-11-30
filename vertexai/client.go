@@ -1,11 +1,7 @@
 package vertexai
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -87,66 +83,6 @@ func (c *Client) WithBaseURL(baseURL string) *Client {
 func (c *Client) WithHTTPClient(httpClient *http.Client) *Client {
 	c.hc = httpClient
 	return c
-}
-
-// ReqOption is http requestion functional option.
-type ReqOption func(*http.Request)
-
-// WithSetHeader sets the header key to value val.
-func WithSetHeader(key, val string) ReqOption {
-	return func(req *http.Request) {
-		if req.Header == nil {
-			req.Header = make(http.Header)
-		}
-		req.Header.Set(key, val)
-	}
-}
-
-// WithAddHeader adds the val to key header.
-func WithAddHeader(key, val string) ReqOption {
-	return func(req *http.Request) {
-		if req.Header == nil {
-			req.Header = make(http.Header)
-		}
-		req.Header.Add(key, val)
-	}
-}
-
-func (c *Client) newRequest(ctx context.Context, method, url string, body io.Reader, opts ...ReqOption) (*http.Request, error) {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if body == nil {
-		body = &bytes.Reader{}
-	}
-
-	req, err := http.NewRequestWithContext(ctx, method, url, body)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, setOption := range opts {
-		setOption(req)
-	}
-
-	if c.token == "" {
-		var err error
-		c.token, err = GetToken(c.tokenSrc)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
-	req.Header.Set("Accept", "application/json; charset=utf-8")
-	if body != nil {
-		// if no content-type is specified we default to json
-		if ct := req.Header.Get("Content-Type"); len(ct) == 0 {
-			req.Header.Set("Content-Type", "application/json; charset=utf-8")
-		}
-	}
-
-	return req, nil
 }
 
 func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
