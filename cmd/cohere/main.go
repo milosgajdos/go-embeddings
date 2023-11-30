@@ -17,7 +17,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&input, "input", "", "input data")
+	flag.StringVar(&input, "input", "what is life", "input data")
 	flag.StringVar(&model, "model", string(cohere.EnglishV3), "model name")
 	flag.StringVar(&truncate, "truncate", string(cohere.NoneTrunc), "truncate type")
 	flag.StringVar(&inputType, "input-type", string(cohere.ClusteringInput), "input type")
@@ -35,7 +35,12 @@ func main() {
 		Truncate:  cohere.Truncate(truncate),
 	}
 
-	embs, err := c.Embeddings(context.Background(), embReq)
+	embResp, err := c.Embeddings(context.Background(), embReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	embs, err := cohere.ToEmbeddings(embResp)
 	if err != nil {
 		log.Fatal(err)
 	}

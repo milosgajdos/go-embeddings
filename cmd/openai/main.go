@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&input, "input", "", "input data")
+	flag.StringVar(&input, "input", "what is life", "input data")
 	flag.StringVar(&model, "model", string(openai.TextAdaV2), "model name")
 	flag.StringVar(&encoding, "encoding", string(openai.EncodingFloat), "encoding format")
 }
@@ -32,7 +32,12 @@ func main() {
 		EncodingFormat: openai.EncodingFormat(encoding),
 	}
 
-	embs, err := c.Embeddings(context.Background(), embReq)
+	embResp, err := c.Embeddings(context.Background(), embReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	embs, err := openai.ToEmbeddings(embResp)
 	if err != nil {
 		log.Fatal(err)
 	}

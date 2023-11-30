@@ -4,15 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"net/url"
-)
 
-// Embedding is vector embedding.
-type Embedding struct {
-	Vector []float64 `json:"vector"`
-}
+	"github.com/milosgajdos/go-embeddings"
+)
 
 // EmbeddingRequest sent to API endpoint.
 type EmbeddingRequest struct {
@@ -38,18 +34,14 @@ type APIVersion struct {
 	Version string `json:"version"`
 }
 
-// toEmbeddings decodes the raw API response,
+// ToEmbeddings converts the raw API response,
 // parses it into a slice of embeddings and returns it.
-func toEmbeddings(r io.Reader) ([]*Embedding, error) {
-	var resp EmbedddingResponse
-	if err := json.NewDecoder(r).Decode(&resp); err != nil {
-		return nil, err
-	}
-	embs := make([]*Embedding, 0, len(resp.Embeddings))
-	for _, e := range resp.Embeddings {
+func ToEmbeddings(e *EmbedddingResponse) ([]*embeddings.Embedding, error) {
+	embs := make([]*embeddings.Embedding, 0, len(e.Embeddings))
+	for _, e := range e.Embeddings {
 		floats := make([]float64, len(e))
 		copy(floats, e)
-		emb := &Embedding{
+		emb := &embeddings.Embedding{
 			Vector: floats,
 		}
 		embs = append(embs, emb)
@@ -58,7 +50,7 @@ func toEmbeddings(r io.Reader) ([]*Embedding, error) {
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*EmbedddingResponse, error) {
 	u, err := url.Parse(c.baseURL + "/" + c.version + "/embed")
 	if err != nil {
 		return nil, err
@@ -82,5 +74,10 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 	}
 	defer resp.Body.Close()
 
-	return toEmbeddings(resp.Body)
+	e := new(EmbedddingResponse)
+	if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
+		return nil, err
+	}
+
+	return e, nil
 }

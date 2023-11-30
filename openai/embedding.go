@@ -11,20 +11,9 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+
+	"github.com/milosgajdos/go-embeddings"
 )
-
-// Usage tracks API token usage.
-type Usage struct {
-	PromptTokens int `json:"prompt_tokens"`
-	TotalTokens  int `json:"total_tokens"`
-}
-
-// Embedding is openai API embedding.
-type Embedding struct {
-	Object string    `json:"object"`
-	Index  int       `json:"index"`
-	Vector []float64 `json:"vector"`
-}
 
 // EmbeddingString is base64 encoded embedding.
 type EmbeddingString string
@@ -50,6 +39,27 @@ func (s EmbeddingString) Decode() ([]float64, error) {
 	return floats, nil
 }
 
+// Usage tracks API token usage.
+type Usage struct {
+	PromptTokens int `json:"prompt_tokens"`
+	TotalTokens  int `json:"total_tokens"`
+}
+
+// Data stores vector embeddings.
+type Data struct {
+	Object    string    `json:"object"`
+	Index     int       `json:"index"`
+	Embedding []float64 `json:"embedding"`
+}
+
+// EmbeddingResponseGen is the API response.
+type EmbeddingResponse struct {
+	Object string `json:"object"`
+	Data   []Data `json:"data"`
+	Model  Model  `json:"model"`
+	Usage  Usage  `json:"usage"`
+}
+
 // EmbeddingRequest is serialized and sent to the API server.
 type EmbeddingRequest struct {
 	Input          any            `json:"input"`
@@ -58,64 +68,82 @@ type EmbeddingRequest struct {
 	EncodingFormat EncodingFormat `json:"encoding_format,omitempty"`
 }
 
-// Data stores the raw embeddings.
-// It's used when deserializing data from API.
-type Data[T any] struct {
+// DataGen is a generic struct used for deserializing vector embeddings.
+type DataGen[T any] struct {
 	Object    string `json:"object"`
 	Index     int    `json:"index"`
 	Embedding T      `json:"embedding"`
 }
 
-// EmbeddingResponse is the API response.
-type EmbeddingResponse[T any] struct {
-	Object string    `json:"object"`
-	Data   []Data[T] `json:"data"`
-	Model  Model     `json:"model"`
-	Usage  Usage     `json:"usage"`
+// EmbeddingResponseGen is a generic struct used for deserializing API response.
+type EmbeddingResponseGen[T any] struct {
+	Object string       `json:"object"`
+	Data   []DataGen[T] `json:"data"`
+	Model  Model        `json:"model"`
+	Usage  Usage        `json:"usage"`
 }
 
-// toEmbeddings decodes the raw API response,
+// ToEmbeddings converts the raw API response,
 // parses it into a slice of embeddings and returns it.
-func toEmbeddings[T any](resp io.Reader) ([]*Embedding, error) {
+func ToEmbeddings(e *EmbeddingResponse) ([]*embeddings.Embedding, error) {
+	embs := make([]*embeddings.Embedding, 0, len(e.Data))
+	for _, d := range e.Data {
+		floats := make([]float64, len(d.Embedding))
+		copy(floats, d.Embedding)
+		emb := &embeddings.Embedding{
+			Vector: floats,
+		}
+		embs = append(embs, emb)
+	}
+	return embs, nil
+}
+
+// toEmbeddingResp decodes the raw API response,
+// parses it into a slice of embeddings and returns it.
+func toEmbeddingResp[T any](resp io.Reader) (*EmbeddingResponse, error) {
 	data := new(T)
 	if err := json.NewDecoder(resp).Decode(data); err != nil {
 		return nil, err
 	}
 
 	switch e := any(data).(type) {
-	case *EmbeddingResponse[EmbeddingString]:
-		embs := make([]*Embedding, 0, len(e.Data))
+	case *EmbeddingResponseGen[EmbeddingString]:
+		embData := make([]Data, 0, len(e.Data))
 		for _, d := range e.Data {
 			floats, err := d.Embedding.Decode()
 			if err != nil {
 				return nil, err
 			}
-			emb := &Embedding{
-				Object: d.Object,
-				Index:  d.Index,
-				Vector: floats,
-			}
-			embs = append(embs, emb)
+			embData = append(embData, Data{
+				Object:    d.Object,
+				Index:     d.Index,
+				Embedding: floats,
+			})
 		}
-		return embs, nil
-	case *EmbeddingResponse[[]float64]:
-		embs := make([]*Embedding, 0, len(e.Data))
+		return &EmbeddingResponse{
+			Object: e.Object,
+			Data:   embData,
+			Model:  e.Model,
+			Usage:  e.Usage,
+		}, nil
+	case *EmbeddingResponseGen[[]float64]:
+		embData := make([]Data, 0, len(e.Data))
 		for _, d := range e.Data {
-			emb := &Embedding{
-				Object: d.Object,
-				Index:  d.Index,
-				Vector: d.Embedding,
-			}
-			embs = append(embs, emb)
+			embData = append(embData, Data(d))
 		}
-		return embs, nil
+		return &EmbeddingResponse{
+			Object: e.Object,
+			Data:   embData,
+			Model:  e.Model,
+			Usage:  e.Usage,
+		}, nil
 	}
 
 	return nil, ErrInValidData
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*Embedding, error) {
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*EmbeddingResponse, error) {
 	u, err := url.Parse(c.baseURL + "/" + c.version + "/embeddings")
 	if err != nil {
 		return nil, err
@@ -141,9 +169,9 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*E
 
 	switch embReq.EncodingFormat {
 	case EncodingBase64:
-		return toEmbeddings[EmbeddingResponse[EmbeddingString]](resp.Body)
+		return toEmbeddingResp[EmbeddingResponseGen[EmbeddingString]](resp.Body)
 	case EncodingFloat:
-		return toEmbeddings[EmbeddingResponse[[]float64]](resp.Body)
+		return toEmbeddingResp[EmbeddingResponseGen[[]float64]](resp.Body)
 	}
 
 	return nil, ErrUnsupportedEncoding
