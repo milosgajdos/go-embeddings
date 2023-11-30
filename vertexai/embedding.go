@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/milosgajdos/go-embeddings"
+	"github.com/milosgajdos/go-embeddings/request"
 )
 
 // EmbeddingRequest sent to API endpoint.
@@ -81,7 +82,19 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*Emb
 		return nil, err
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPost, u.String(), body)
+	if c.token == "" {
+		var err error
+		c.token, err = GetToken(c.tokenSrc)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	options := []request.Option{
+		request.WithBearer(c.token),
+	}
+
+	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)
 	if err != nil {
 		return nil, err
 	}
