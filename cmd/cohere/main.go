@@ -17,7 +17,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&input, "input", "", "input data")
+	flag.StringVar(&input, "input", "what is life", "input data")
 	flag.StringVar(&model, "model", string(cohere.EnglishV3), "model name")
 	flag.StringVar(&truncate, "truncate", string(cohere.NoneTrunc), "truncate type")
 	flag.StringVar(&inputType, "input-type", string(cohere.ClusteringInput), "input type")
