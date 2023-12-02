@@ -13,6 +13,11 @@ const (
 	MultiLingV2      Model = "embed-multilingual-v2.0"
 )
 
+// String implements stringer.
+func (m Model) String() string {
+	return string(m)
+}
+
 // InputType is an embedding input type.
 type InputType string
 
@@ -22,6 +27,11 @@ const (
 	ClassificationInput InputType = "classification"
 	ClusteringInput     InputType = "clustering"
 )
+
+// String implements stringer.
+func (i InputType) String() string {
+	return string(i)
+}
 
 // Truncate controls input truncating.
 // It controls how the API handles inputs
@@ -33,3 +43,8 @@ const (
 	EndTrunc   Truncate = "END"
 	NoneTrunc  Truncate = "NONE"
 )
+
+// String implements stringer.
+func (t Truncate) String() string {
+	return string(t)
+}
