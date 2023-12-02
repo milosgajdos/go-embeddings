@@ -14,6 +14,11 @@ const (
 	EmbedMultiGecko Model = "multimodalembedding@001"
 )
 
+// String implements stringer.
+func (m Model) String() string {
+	return string(m)
+}
+
 // TaskType is embedding task type.
 // It can be used to improve the embedding quality
 // when targeting a specific task.
@@ -27,3 +32,8 @@ const (
 	ClassificationTask TaskType = "CLASSIFICATION"
 	ClusteringTask     TaskType = "CLUSTERING"
 )
+
+// String implements stringer.
+func (t TaskType) String() string {
+	return string(t)
+}

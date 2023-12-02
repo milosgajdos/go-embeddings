@@ -18,9 +18,9 @@ var (
 
 func init() {
 	flag.StringVar(&input, "input", "what is life", "input data")
-	flag.StringVar(&model, "model", string(cohere.EnglishV3), "model name")
-	flag.StringVar(&truncate, "truncate", string(cohere.NoneTrunc), "truncate type")
-	flag.StringVar(&inputType, "input-type", string(cohere.ClusteringInput), "input type")
+	flag.StringVar(&model, "model", cohere.EnglishV3.String(), "model name")
+	flag.StringVar(&truncate, "truncate", cohere.NoneTrunc.String(), "truncate type")
+	flag.StringVar(&inputType, "input-type", cohere.ClusteringInput.String(), "input type")
 }
 
 func main() {

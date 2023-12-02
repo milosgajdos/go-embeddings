@@ -20,9 +20,9 @@ var (
 
 func init() {
 	flag.StringVar(&input, "input", "what is life", "input data")
-	flag.StringVar(&model, "model", string(vertexai.EmbedGeckoV2), "model name")
+	flag.StringVar(&model, "model", vertexai.EmbedGeckoV2.String(), "model name")
 	flag.BoolVar(&truncate, "truncate", false, "truncate type")
-	flag.StringVar(&taskType, "task-type", string(vertexai.RetrQueryTask), "task type")
+	flag.StringVar(&taskType, "task-type", vertexai.RetrQueryTask.String(), "task type")
 	flag.StringVar(&title, "title", "", "title: only relevant for retrival document tasks")
 }
 

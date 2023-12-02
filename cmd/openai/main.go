@@ -17,8 +17,8 @@ var (
 
 func init() {
 	flag.StringVar(&input, "input", "what is life", "input data")
-	flag.StringVar(&model, "model", string(openai.TextAdaV2), "model name")
-	flag.StringVar(&encoding, "encoding", string(openai.EncodingFloat), "encoding format")
+	flag.StringVar(&model, "model", openai.TextAdaV2.String(), "model name")
+	flag.StringVar(&encoding, "encoding", openai.EncodingFloat.String(), "encoding format")
 }
 
 func main() {
