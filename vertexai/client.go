@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/milosgajdos/go-embeddings"
 	"golang.org/x/oauth2"
 )
 
@@ -44,6 +45,11 @@ func NewClient() *Client {
 		baseURL:   BaseURL,
 		hc:        &http.Client{},
 	}
+}
+
+// NewEmbedder creates a client that implements embeddings.Embedder
+func NewEmbedder() embeddings.Embedder[*EmbeddingRequest] {
+	return NewClient()
 }
 
 // WithToken sets the API token.

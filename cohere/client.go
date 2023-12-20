@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+
+	"github.com/milosgajdos/go-embeddings"
 )
 
 const (
@@ -32,6 +34,11 @@ func NewClient() *Client {
 		version: EmbedAPIVersion,
 		hc:      &http.Client{},
 	}
+}
+
+// NewEmbedder creates a client that implements embeddings.Embedder
+func NewEmbedder() embeddings.Embedder[*EmbeddingRequest] {
+	return NewClient()
 }
 
 // WithAPIKey sets the API key.

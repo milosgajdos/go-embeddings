@@ -51,7 +51,7 @@ type APIVersion struct {
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*EmbedddingResponse, error) {
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
 	u, err := url.Parse(c.baseURL + "/" + c.version + "/embed")
 	if err != nil {
 		return nil, err
@@ -84,5 +84,5 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*Emb
 		return nil, err
 	}
 
-	return e, nil
+	return e.ToEmbeddings()
 }
