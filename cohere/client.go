@@ -17,56 +17,76 @@ const (
 
 // Client is Cohere HTTP API client.
 type Client struct {
-	apiKey  string
-	baseURL string
-	version string
-	hc      *http.Client
+	opts Options
 }
+
+// Options are client options
+type Options struct {
+	APIKey     string
+	BaseURL    string
+	Version    string
+	HTTPClient *http.Client
+}
+
+// Option is functional graph option.
+type Option func(*Options)
 
 // NewClient creates a new HTTP API client and returns it.
 // By default it reads the Cohere API key from COHERE_API_KEY
 // env var and uses the default Go http.Client for making API requests.
 // You can override the default options via the client methods.
-func NewClient() *Client {
+func NewClient(opts ...Option) *Client {
+	options := Options{
+		APIKey:     os.Getenv("COHERE_API_KEY"),
+		BaseURL:    BaseURL,
+		Version:    EmbedAPIVersion,
+		HTTPClient: &http.Client{},
+	}
+
+	for _, apply := range opts {
+		apply(&options)
+	}
+
 	return &Client{
-		apiKey:  os.Getenv("COHERE_API_KEY"),
-		baseURL: BaseURL,
-		version: EmbedAPIVersion,
-		hc:      &http.Client{},
+		opts: options,
 	}
 }
 
 // NewEmbedder creates a client that implements embeddings.Embedder
-func NewEmbedder() embeddings.Embedder[*EmbeddingRequest] {
-	return NewClient()
+func NewEmbedder(opts ...Option) embeddings.Embedder[*EmbeddingRequest] {
+	return NewClient(opts...)
 }
 
 // WithAPIKey sets the API key.
-func (c *Client) WithAPIKey(apiKey string) *Client {
-	c.apiKey = apiKey
-	return c
+func WithAPIKey(apiKey string) Option {
+	return func(o *Options) {
+		o.APIKey = apiKey
+	}
 }
 
 // WithBaseURL sets the API base URL.
-func (c *Client) WithBaseURL(baseURL string) *Client {
-	c.baseURL = baseURL
-	return c
+func WithBaseURL(baseURL string) Option {
+	return func(o *Options) {
+		o.BaseURL = baseURL
+	}
 }
 
 // WithVersion sets the API version.
-func (c *Client) WithVersion(version string) *Client {
-	c.version = version
-	return c
+func WithVersion(version string) Option {
+	return func(o *Options) {
+		o.Version = version
+	}
 }
 
 // WithHTTPClient sets the HTTP client.
-func (c *Client) WithHTTPClient(httpClient *http.Client) *Client {
-	c.hc = httpClient
-	return c
+func WithHTTPClient(httpClient *http.Client) Option {
+	return func(o *Options) {
+		o.HTTPClient = httpClient
+	}
 }
 
 func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
-	resp, err := c.hc.Do(req)
+	resp, err := c.opts.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -145,7 +145,7 @@ func toEmbeddingResp[T any](resp io.Reader) (*EmbeddingResponse, error) {
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
 func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
-	u, err := url.Parse(c.baseURL + "/" + c.version + "/embeddings")
+	u, err := url.Parse(c.opts.BaseURL + "/" + c.opts.Version + "/embeddings")
 	if err != nil {
 		return nil, err
 	}
@@ -158,10 +158,10 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*e
 	}
 
 	options := []request.Option{
-		request.WithBearer(c.apiKey),
+		request.WithBearer(c.opts.APIKey),
 	}
-	if c.orgID != "" {
-		options = append(options, request.WithSetHeader(OrgHeader, c.orgID))
+	if c.opts.OrgID != "" {
+		options = append(options, request.WithSetHeader(OrgHeader, c.opts.OrgID))
 	}
 
 	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)

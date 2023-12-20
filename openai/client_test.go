@@ -16,46 +16,46 @@ func TestClient(t *testing.T) {
 
 	t.Run("API key", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.apiKey, openaiKey)
+		assert.Equal(t, c.opts.APIKey, openaiKey)
 
 		testVal := "foo"
-		c.WithAPIKey(testVal)
-		assert.Equal(t, c.apiKey, testVal)
+		c = NewClient(WithAPIKey(testVal))
+		assert.Equal(t, c.opts.APIKey, testVal)
 	})
 
 	t.Run("BaseURL", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.baseURL, BaseURL)
+		assert.Equal(t, c.opts.BaseURL, BaseURL)
 
 		testVal := "http://foo"
-		c.WithBaseURL(testVal)
-		assert.Equal(t, c.baseURL, testVal)
+		c = NewClient(WithBaseURL(testVal))
+		assert.Equal(t, c.opts.BaseURL, testVal)
 	})
 
 	t.Run("version", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.version, EmbedAPIVersion)
+		assert.Equal(t, c.opts.Version, EmbedAPIVersion)
 
 		testVal := "v3"
-		c.WithVersion(testVal)
-		assert.Equal(t, c.version, testVal)
+		c = NewClient(WithVersion(testVal))
+		assert.Equal(t, c.opts.Version, testVal)
 	})
 
 	t.Run("orgID", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.orgID, "")
+		assert.Equal(t, c.opts.OrgID, "")
 
 		testVal := "orgID"
-		c.WithOrgID(testVal)
-		assert.Equal(t, c.orgID, testVal)
+		c = NewClient(WithOrgID(testVal))
+		assert.Equal(t, c.opts.OrgID, testVal)
 	})
 
 	t.Run("http client", func(t *testing.T) {
 		c := NewClient()
-		assert.NotNil(t, c.hc)
+		assert.NotNil(t, c.opts.HTTPClient)
 
 		testVal := &http.Client{}
-		c.WithHTTPClient(testVal)
-		assert.NotNil(t, c.hc)
+		c = NewClient(WithHTTPClient(testVal))
+		assert.NotNil(t, c.opts.HTTPClient)
 	})
 }

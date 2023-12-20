@@ -71,7 +71,7 @@ type Statistics struct {
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
 func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
-	u, err := url.Parse(c.baseURL + "/" + c.projectID + "/" + ModelURI + "/" + c.modelID + EmbedAction)
+	u, err := url.Parse(c.opts.BaseURL + "/" + c.opts.ProjectID + "/" + ModelURI + "/" + c.opts.ModelID + EmbedAction)
 	if err != nil {
 		return nil, err
 	}
@@ -83,16 +83,16 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*e
 		return nil, err
 	}
 
-	if c.token == "" {
+	if c.opts.Token == "" {
 		var err error
-		c.token, err = GetToken(c.tokenSrc)
+		c.opts.Token, err = GetToken(c.opts.TokenSrc)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	options := []request.Option{
-		request.WithBearer(c.token),
+		request.WithBearer(c.opts.Token),
 	}
 
 	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)
