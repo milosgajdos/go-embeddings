@@ -69,8 +69,8 @@ type Statistics struct {
 	Truncated  bool `json:"truncated"`
 }
 
-// Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
+// Embed returns embeddings for every object in EmbeddingRequest.
+func (c *Client) Embed(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
 	u, err := url.Parse(c.opts.BaseURL + "/" + c.opts.ProjectID + "/" + ModelURI + "/" + c.opts.ModelID + EmbedAction)
 	if err != nil {
 		return nil, err
