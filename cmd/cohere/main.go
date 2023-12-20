@@ -40,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	embs, err := cohere.ToEmbeddings(embResp)
+	embs, err := embResp.ToEmbeddings()
 	if err != nil {
 		log.Fatal(err)
 	}

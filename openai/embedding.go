@@ -61,6 +61,21 @@ type EmbeddingResponse struct {
 	Usage  Usage  `json:"usage"`
 }
 
+// ToEmbeddings converts the API response,
+// into a slice of embeddings and returns it.
+func (e *EmbeddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
+	embs := make([]*embeddings.Embedding, 0, len(e.Data))
+	for _, d := range e.Data {
+		floats := make([]float64, len(d.Embedding))
+		copy(floats, d.Embedding)
+		emb := &embeddings.Embedding{
+			Vector: floats,
+		}
+		embs = append(embs, emb)
+	}
+	return embs, nil
+}
+
 // EmbeddingRequest is serialized and sent to the API server.
 type EmbeddingRequest struct {
 	Input          any            `json:"input"`
@@ -82,21 +97,6 @@ type EmbeddingResponseGen[T any] struct {
 	Data   []DataGen[T] `json:"data"`
 	Model  Model        `json:"model"`
 	Usage  Usage        `json:"usage"`
-}
-
-// ToEmbeddings converts the raw API response,
-// parses it into a slice of embeddings and returns it.
-func ToEmbeddings(e *EmbeddingResponse) ([]*embeddings.Embedding, error) {
-	embs := make([]*embeddings.Embedding, 0, len(e.Data))
-	for _, d := range e.Data {
-		floats := make([]float64, len(d.Embedding))
-		copy(floats, d.Embedding)
-		emb := &embeddings.Embedding{
-			Vector: floats,
-		}
-		embs = append(embs, emb)
-	}
-	return embs, nil
 }
 
 // toEmbeddingResp decodes the raw API response,

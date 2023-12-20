@@ -40,6 +40,21 @@ type EmbedddingResponse struct {
 	Metadata    map[string]any `json:"metadata"`
 }
 
+// ToEmbeddings converts the API response,
+// into a slice of embeddings and returns it.
+func (e *EmbedddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
+	embs := make([]*embeddings.Embedding, 0, len(e.Predictions))
+	for _, p := range e.Predictions {
+		floats := make([]float64, len(p.Embeddings.Values))
+		copy(floats, p.Embeddings.Values)
+		emb := &embeddings.Embedding{
+			Vector: floats,
+		}
+		embs = append(embs, emb)
+	}
+	return embs, nil
+}
+
 // Predictions is the generated response
 type Predictions struct {
 	Embeddings struct {
@@ -52,20 +67,6 @@ type Predictions struct {
 type Statistics struct {
 	TokenCount int  `json:"token_count"`
 	Truncated  bool `json:"truncated"`
-}
-
-// ToEmbeddings converts the API response to embeddings object.
-func ToEmbeddings(e *EmbedddingResponse) ([]*embeddings.Embedding, error) {
-	embs := make([]*embeddings.Embedding, 0, len(e.Predictions))
-	for _, p := range e.Predictions {
-		floats := make([]float64, len(p.Embeddings.Values))
-		copy(floats, p.Embeddings.Values)
-		emb := &embeddings.Embedding{
-			Vector: floats,
-		}
-		embs = append(embs, emb)
-	}
-	return embs, nil
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.

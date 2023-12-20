@@ -25,19 +25,9 @@ type EmbedddingResponse struct {
 	Meta       *Meta       `json:"meta,omitempty"`
 }
 
-// Meta stores API response metadata.
-type Meta struct {
-	APIVersion *APIVersion `json:"api_version,omitempty"`
-}
-
-// APIVersion stores metadata API version.
-type APIVersion struct {
-	Version string `json:"version"`
-}
-
-// ToEmbeddings converts the raw API response,
-// parses it into a slice of embeddings and returns it.
-func ToEmbeddings(e *EmbedddingResponse) ([]*embeddings.Embedding, error) {
+// ToEmbeddings converts the API response,
+// into a slice of embeddings and returns it.
+func (e *EmbedddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
 	embs := make([]*embeddings.Embedding, 0, len(e.Embeddings))
 	for _, e := range e.Embeddings {
 		floats := make([]float64, len(e))
@@ -48,6 +38,16 @@ func ToEmbeddings(e *EmbedddingResponse) ([]*embeddings.Embedding, error) {
 		embs = append(embs, emb)
 	}
 	return embs, nil
+}
+
+// Meta stores API response metadata.
+type Meta struct {
+	APIVersion *APIVersion `json:"api_version,omitempty"`
+}
+
+// APIVersion stores metadata API version.
+type APIVersion struct {
+	Version string `json:"version"`
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
