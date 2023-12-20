@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	embs, err := openai.ToEmbeddings(embResp)
+	embs, err := embResp.ToEmbeddings()
 	if err != nil {
 		log.Fatal(err)
 	}
