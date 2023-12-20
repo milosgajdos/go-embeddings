@@ -144,8 +144,8 @@ func toEmbeddingResp[T any](resp io.Reader) (*EmbeddingResponse, error) {
 }
 
 // Embeddings returns embeddings for every object in EmbeddingRequest.
-func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*EmbeddingResponse, error) {
-	u, err := url.Parse(c.baseURL + "/" + c.version + "/embeddings")
+func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) ([]*embeddings.Embedding, error) {
+	u, err := url.Parse(c.opts.BaseURL + "/" + c.opts.Version + "/embeddings")
 	if err != nil {
 		return nil, err
 	}
@@ -158,10 +158,10 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*Emb
 	}
 
 	options := []request.Option{
-		request.WithBearer(c.apiKey),
+		request.WithBearer(c.opts.APIKey),
 	}
-	if c.orgID != "" {
-		options = append(options, request.WithSetHeader(OrgHeader, c.orgID))
+	if c.opts.OrgID != "" {
+		options = append(options, request.WithSetHeader(OrgHeader, c.opts.OrgID))
 	}
 
 	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)
@@ -175,12 +175,19 @@ func (c *Client) Embeddings(ctx context.Context, embReq *EmbeddingRequest) (*Emb
 	}
 	defer resp.Body.Close()
 
+	var embs *EmbeddingResponse
+
 	switch embReq.EncodingFormat {
 	case EncodingBase64:
-		return toEmbeddingResp[EmbeddingResponseGen[EmbeddingString]](resp.Body)
+		embs, err = toEmbeddingResp[EmbeddingResponseGen[EmbeddingString]](resp.Body)
 	case EncodingFloat:
-		return toEmbeddingResp[EmbeddingResponseGen[[]float64]](resp.Body)
+		embs, err = toEmbeddingResp[EmbeddingResponseGen[[]float64]](resp.Body)
+	default:
+		return nil, ErrUnsupportedEncoding
+	}
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, ErrUnsupportedEncoding
+	return embs.ToEmbeddings()
 }

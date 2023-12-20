@@ -51,7 +51,7 @@ type MultiPrediction struct {
 
 // MultiEmbeddings returns multimodal embeddings for every object in EmbeddingRequest.
 func (c *Client) MultiEmbeddings(ctx context.Context, embReq *MultiEmbeddingRequest) (*MultiEmbedddingResponse, error) {
-	u, err := url.Parse(c.baseURL + "/" + c.projectID + "/" + ModelURI + "/" + c.modelID + EmbedAction)
+	u, err := url.Parse(c.opts.BaseURL + "/" + c.opts.ProjectID + "/" + ModelURI + "/" + c.opts.ModelID + EmbedAction)
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +63,16 @@ func (c *Client) MultiEmbeddings(ctx context.Context, embReq *MultiEmbeddingRequ
 		return nil, err
 	}
 
-	if c.token == "" {
+	if c.opts.Token == "" {
 		var err error
-		c.token, err = GetToken(c.tokenSrc)
+		c.opts.Token, err = GetToken(c.opts.TokenSrc)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	options := []request.Option{
-		request.WithBearer(c.token),
+		request.WithBearer(c.opts.Token),
 	}
 
 	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)

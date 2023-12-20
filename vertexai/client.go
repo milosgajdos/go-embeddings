@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/milosgajdos/go-embeddings"
 	"golang.org/x/oauth2"
 )
 
@@ -19,13 +20,21 @@ const (
 
 // Client is a Google Vertex AI HTTP API client.
 type Client struct {
-	token     string
-	tokenSrc  oauth2.TokenSource
-	projectID string
-	modelID   string
-	baseURL   string
-	hc        *http.Client
+	opts Options
 }
+
+// Options are client options
+type Options struct {
+	Token      string
+	TokenSrc   oauth2.TokenSource
+	ProjectID  string
+	ModelID    string
+	BaseURL    string
+	HTTPClient *http.Client
+}
+
+// Option is functional graph option.
+type Option func(*Options)
 
 // NewClient creates a new HTTP client and returns it.
 // By default it reads the following env vars:
@@ -36,57 +45,76 @@ type Client struct {
 // to the BaseURL. You can override the default client options
 // via the client methods.
 // NOTE: you must provide either the token or the token source
-func NewClient() *Client {
+func NewClient(opts ...Option) *Client {
+	options := Options{
+		Token:      os.Getenv("VERTEXAI_TOKEN"),
+		ModelID:    os.Getenv("VERTEXAI_MODEL_ID"),
+		ProjectID:  os.Getenv("GOOGLE_PROJECT_ID"),
+		BaseURL:    BaseURL,
+		HTTPClient: &http.Client{},
+	}
+
+	for _, apply := range opts {
+		apply(&options)
+	}
+
 	return &Client{
-		token:     os.Getenv("VERTEXAI_TOKEN"),
-		modelID:   os.Getenv("VERTEXAI_MODEL_ID"),
-		projectID: os.Getenv("GOOGLE_PROJECT_ID"),
-		baseURL:   BaseURL,
-		hc:        &http.Client{},
+		opts: options,
 	}
 }
 
+// NewEmbedder creates a client that implements embeddings.Embedder
+func NewEmbedder(opts ...Option) embeddings.Embedder[*EmbeddingRequest] {
+	return NewClient(opts...)
+}
+
 // WithToken sets the API token.
-func (c *Client) WithToken(token string) *Client {
-	c.token = token
-	return c
+func WithToken(token string) Option {
+	return func(o *Options) {
+		o.Token = token
+	}
 }
 
 // WithTokenSrc sets the API token source.
 // The source can be used for generating the API token
 // if no token has been set.
-func (c *Client) WithTokenSrc(ts oauth2.TokenSource) *Client {
-	c.tokenSrc = ts
-	return c
+func WithTokenSrc(ts oauth2.TokenSource) Option {
+	return func(o *Options) {
+		o.TokenSrc = ts
+	}
 }
 
 // WithProjectID sets the Google Project ID.
-func (c *Client) WithProjectID(id string) *Client {
-	c.projectID = id
-	return c
+func WithProjectID(id string) Option {
+	return func(o *Options) {
+		o.ProjectID = id
+	}
 }
 
 // WithModelID sets the Vertex AI model ID.
 // https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning
-func (c *Client) WithModelID(id string) *Client {
-	c.modelID = id
-	return c
+func WithModelID(id string) Option {
+	return func(o *Options) {
+		o.ModelID = id
+	}
 }
 
 // WithBaseURL sets the API base URL.
-func (c *Client) WithBaseURL(baseURL string) *Client {
-	c.baseURL = baseURL
-	return c
+func WithBaseURL(baseURL string) Option {
+	return func(o *Options) {
+		o.BaseURL = baseURL
+	}
 }
 
 // WithHTTPClient sets the HTTP client.
-func (c *Client) WithHTTPClient(httpClient *http.Client) *Client {
-	c.hc = httpClient
-	return c
+func WithHTTPClient(httpClient *http.Client) Option {
+	return func(o *Options) {
+		o.HTTPClient = httpClient
+	}
 }
 
 func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
-	resp, err := c.hc.Do(req)
+	resp, err := c.opts.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

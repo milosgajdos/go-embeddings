@@ -29,55 +29,55 @@ func TestClient(t *testing.T) {
 
 	t.Run("token", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.token, vertexaiToken)
+		assert.Equal(t, c.opts.Token, vertexaiToken)
 
 		testVal := "foo"
-		c.WithToken(testVal)
-		assert.Equal(t, c.token, testVal)
+		c = NewClient(WithToken(testVal))
+		assert.Equal(t, c.opts.Token, testVal)
 	})
 
 	t.Run("token source", func(t *testing.T) {
 		c := NewClient()
-		assert.Nil(t, c.tokenSrc)
+		assert.Nil(t, c.opts.TokenSrc)
 
 		ts := &ts{token: "foo"}
-		c.WithTokenSrc(ts)
-		assert.NotNil(t, c.tokenSrc)
+		c = NewClient(WithTokenSrc(ts))
+		assert.NotNil(t, c.opts.TokenSrc)
 	})
 
 	t.Run("project id", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.projectID, googleProjectID)
+		assert.Equal(t, c.opts.ProjectID, googleProjectID)
 
 		testVal := "id"
-		c.WithProjectID(testVal)
-		assert.Equal(t, c.projectID, testVal)
+		c = NewClient(WithProjectID(testVal))
+		assert.Equal(t, c.opts.ProjectID, testVal)
 	})
 
 	t.Run("model id", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.modelID, vertexaiMoel)
+		assert.Equal(t, c.opts.ModelID, vertexaiMoel)
 
 		testVal := "id"
-		c.WithProjectID(testVal)
-		assert.Equal(t, c.modelID, vertexaiMoel)
+		c = NewClient(WithProjectID(testVal))
+		assert.Equal(t, c.opts.ModelID, vertexaiMoel)
 	})
 
 	t.Run("BaseURL", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.baseURL, BaseURL)
+		assert.Equal(t, c.opts.BaseURL, BaseURL)
 
 		testVal := "http://foo"
-		c.WithBaseURL(testVal)
-		assert.Equal(t, c.baseURL, testVal)
+		c = NewClient(WithBaseURL(testVal))
+		assert.Equal(t, c.opts.BaseURL, testVal)
 	})
 
 	t.Run("http client", func(t *testing.T) {
 		c := NewClient()
-		assert.NotNil(t, c.hc)
+		assert.NotNil(t, c.opts.HTTPClient)
 
 		testVal := &http.Client{}
-		c.WithHTTPClient(testVal)
-		assert.NotNil(t, c.hc)
+		c = NewClient(WithHTTPClient(testVal))
+		assert.NotNil(t, c.opts.HTTPClient)
 	})
 }
