@@ -169,7 +169,7 @@ func (c *Client) Embed(ctx context.Context, embReq *EmbeddingRequest) ([]*embedd
 		return nil, err
 	}
 
-	resp, err := c.doRequest(req)
+	resp, err := request.Do[APIError](c.opts.HTTPClient, req)
 	if err != nil {
 		return nil, err
 	}

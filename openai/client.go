@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 
@@ -92,22 +91,4 @@ func WithHTTPClient(httpClient *http.Client) Option {
 	return func(o *Options) {
 		o.HTTPClient = httpClient
 	}
-}
-
-func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
-	resp, err := c.opts.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusBadRequest {
-		return resp, nil
-	}
-	defer resp.Body.Close()
-
-	var apiErr APIError
-	if err := json.NewDecoder(resp.Body).Decode(&apiErr); err != nil {
-		return nil, err
-	}
-
-	return nil, apiErr
 }

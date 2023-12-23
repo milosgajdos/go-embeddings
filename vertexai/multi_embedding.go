@@ -80,7 +80,7 @@ func (c *Client) MultiEmbeddings(ctx context.Context, embReq *MultiEmbeddingRequ
 		return nil, err
 	}
 
-	resp, err := c.doRequest(req)
+	resp, err := request.Do[APIError](c.opts.HTTPClient, req)
 	if err != nil {
 		return nil, err
 	}
