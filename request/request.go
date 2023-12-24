@@ -3,6 +3,7 @@ package request
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -38,6 +39,25 @@ func NewHTTP(ctx context.Context, method, url string, body io.Reader, opts ...Op
 	}
 
 	return req, nil
+}
+
+// Do sends the HTTP request req using the client and returns the response.
+func Do[T error](client *http.Client, req *http.Request) (*http.Response, error) {
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusBadRequest {
+		return resp, nil
+	}
+	defer resp.Body.Close()
+
+	var apiErr T
+	if err := json.NewDecoder(resp.Body).Decode(&apiErr); err != nil {
+		return nil, err
+	}
+
+	return nil, apiErr
 }
 
 // Option is http requestion functional option.
