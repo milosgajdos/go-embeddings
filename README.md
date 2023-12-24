@@ -4,7 +4,7 @@
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/milosgajdos/go-embeddings)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This project provides an implementation for fetching embeddings from various LLMs.
+This project provides an implementation for fetching embeddings from various LLM providers.
 
 Currently supported APIs:
 * [x] [OpenAI](https://platform.openai.com/docs/api-reference/embeddings)
@@ -12,6 +12,8 @@ Currently supported APIs:
 * [x] [Google Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
 
 There are also simple command line tools provided by this project that let you query the APIs for text embeddings passed in via cli flags.
+
+Finally, the `document` package provides an implmentation of simple text splitters, inspired by the popular [Langchain project](https://github.com/langchain-ai/langchain). It's essentially a Go rewrite of character and recursive character text splitters.
 
 ## nix
 
@@ -30,3 +32,7 @@ nix run ".#vertexai" -- -help
 ```
 
 **NOTE:** `gomod2nix` vendors dependencies into `nix` store so every time you add a new dependency you must run `gomod2nix generate` that updates `gomod2nix.toml`
+
+# Contributions
+
+Yes please!
