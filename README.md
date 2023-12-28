@@ -4,16 +4,35 @@
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/milosgajdos/go-embeddings)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This project provides an implementation for fetching embeddings from various LLM providers.
+This project provides an implementation of API clients for fetching embeddings from various LLM providers.
 
 Currently supported APIs:
 * [x] [OpenAI](https://platform.openai.com/docs/api-reference/embeddings)
 * [x] [Cohere AI](https://docs.cohere.com/reference/embed)
 * [x] [Google Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
 
-There are also simple command line tools provided by this project that let you query the APIs for text embeddings passed in via cli flags.
+You can find sample programs that demonstrate how to use the client packages to fetch the embeddings in `cmd` directory of this project.
 
-Finally, the `document` package provides an implmentation of simple text splitters, inspired by the popular [Langchain project](https://github.com/langchain-ai/langchain). It's essentially a Go rewrite of character and recursive character text splitters.
+Finally, the `document` package provides an implementation of simple document text splitters, heavily inspired by the popular [Langchain framework](https://github.com/langchain-ai/langchain).
+It's essentially a Go rewrite of character and recursive character text splitters.
+
+## Environment variables
+
+Each client package lets you initialize a default API client for a specific embeddings provider by reading the API keys from environment variables.
+
+### OpenAI
+
+* `OPENAI_API_KEY`: Open AI API token
+
+### Cohere
+
+* `COHERE_API_KEY`: Cohere API token
+
+### Google Vertex AI
+
+* `VERTEXAI_TOKEN`: Google Vertex AI API token (can be fetch by `gcloud auth print-access-token` once you've authenticated)
+* `VERTEXAI_MODEL_ID`: Embeddings model (at the moment only `textembedding-gecko@00` or `multimodalembedding@001` are available)
+* `GOOGLE_PROJECT_ID`: Google Project ID
 
 ## nix
 
