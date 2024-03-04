@@ -4,7 +4,9 @@ package openai
 type Model string
 
 const (
-	TextAdaV2 Model = "text-embedding-ada-002"
+	TextAdaV2  Model = "text-embedding-ada-002"
+	Text3Large Model = "text-embedding-3-large"
+	Text3Small Model = "text-embedding-3-small"
 )
 
 // String implements stringer.
