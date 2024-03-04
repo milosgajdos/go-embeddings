@@ -82,6 +82,8 @@ type EmbeddingRequest struct {
 	Model          Model          `json:"model"`
 	User           string         `json:"user"`
 	EncodingFormat EncodingFormat `json:"encoding_format,omitempty"`
+	// NOTE: only supported in V3 and later
+	Dims int `json:"dimensions,omitempty"`
 }
 
 // DataGen is a generic struct used for deserializing vector embeddings.
