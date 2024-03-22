@@ -1,9 +1,9 @@
 package vertexai
 
 import (
-	"net/http"
 	"testing"
 
+	"github.com/milosgajdos/go-embeddings/client"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/oauth2"
 )
@@ -76,7 +76,7 @@ func TestClient(t *testing.T) {
 		c := NewClient()
 		assert.NotNil(t, c.opts.HTTPClient)
 
-		testVal := &http.Client{}
+		testVal := client.NewHTTP()
 		c = NewClient(WithHTTPClient(testVal))
 		assert.NotNil(t, c.opts.HTTPClient)
 	})

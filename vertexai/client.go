@@ -1,10 +1,10 @@
 package vertexai
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/milosgajdos/go-embeddings"
+	"github.com/milosgajdos/go-embeddings/client"
 	"golang.org/x/oauth2"
 )
 
@@ -29,7 +29,7 @@ type Options struct {
 	ProjectID  string
 	ModelID    string
 	BaseURL    string
-	HTTPClient *http.Client
+	HTTPClient *client.HTTP
 }
 
 // Option is functional graph option.
@@ -50,7 +50,7 @@ func NewClient(opts ...Option) *Client {
 		ModelID:    os.Getenv("VERTEXAI_MODEL_ID"),
 		ProjectID:  os.Getenv("GOOGLE_PROJECT_ID"),
 		BaseURL:    BaseURL,
-		HTTPClient: &http.Client{},
+		HTTPClient: client.NewHTTP(),
 	}
 
 	for _, apply := range opts {
@@ -106,7 +106,7 @@ func WithBaseURL(baseURL string) Option {
 }
 
 // WithHTTPClient sets the HTTP client.
-func WithHTTPClient(httpClient *http.Client) Option {
+func WithHTTPClient(httpClient *client.HTTP) Option {
 	return func(o *Options) {
 		o.HTTPClient = httpClient
 	}

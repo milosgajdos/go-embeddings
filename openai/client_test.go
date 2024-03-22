@@ -1,9 +1,9 @@
 package openai
 
 import (
-	"net/http"
 	"testing"
 
+	"github.com/milosgajdos/go-embeddings/client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -54,7 +54,7 @@ func TestClient(t *testing.T) {
 		c := NewClient()
 		assert.NotNil(t, c.opts.HTTPClient)
 
-		testVal := &http.Client{}
+		testVal := client.NewHTTP()
 		c = NewClient(WithHTTPClient(testVal))
 		assert.NotNil(t, c.opts.HTTPClient)
 	})

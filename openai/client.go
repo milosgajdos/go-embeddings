@@ -1,10 +1,10 @@
 package openai
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/milosgajdos/go-embeddings"
+	"github.com/milosgajdos/go-embeddings/client"
 )
 
 const (
@@ -26,7 +26,7 @@ type Options struct {
 	BaseURL    string
 	Version    string
 	OrgID      string
-	HTTPClient *http.Client
+	HTTPClient *client.HTTP
 }
 
 // Option is functional graph option.
@@ -41,7 +41,7 @@ func NewClient(opts ...Option) *Client {
 		APIKey:     os.Getenv("OPENAI_API_KEY"),
 		BaseURL:    BaseURL,
 		Version:    EmbedAPIVersion,
-		HTTPClient: &http.Client{},
+		HTTPClient: client.NewHTTP(),
 	}
 
 	for _, apply := range opts {
@@ -87,7 +87,7 @@ func WithOrgID(orgID string) Option {
 }
 
 // WithHTTPClient sets the HTTP client.
-func WithHTTPClient(httpClient *http.Client) Option {
+func WithHTTPClient(httpClient *client.HTTP) Option {
 	return func(o *Options) {
 		o.HTTPClient = httpClient
 	}

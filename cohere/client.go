@@ -1,10 +1,10 @@
 package cohere
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/milosgajdos/go-embeddings"
+	"github.com/milosgajdos/go-embeddings/client"
 )
 
 const (
@@ -24,7 +24,7 @@ type Options struct {
 	APIKey     string
 	BaseURL    string
 	Version    string
-	HTTPClient *http.Client
+	HTTPClient *client.HTTP
 }
 
 // Option is functional graph option.
@@ -39,7 +39,7 @@ func NewClient(opts ...Option) *Client {
 		APIKey:     os.Getenv("COHERE_API_KEY"),
 		BaseURL:    BaseURL,
 		Version:    EmbedAPIVersion,
-		HTTPClient: &http.Client{},
+		HTTPClient: client.NewHTTP(),
 	}
 
 	for _, apply := range opts {
@@ -78,7 +78,7 @@ func WithVersion(version string) Option {
 }
 
 // WithHTTPClient sets the HTTP client.
-func WithHTTPClient(httpClient *http.Client) Option {
+func WithHTTPClient(httpClient *client.HTTP) Option {
 	return func(o *Options) {
 		o.HTTPClient = httpClient
 	}
