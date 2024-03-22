@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/milosgajdos/go-embeddings/client"
 )
 
 // NewHTTP creates a new HTTP request from the provided parameters  and returns it.
@@ -42,7 +44,7 @@ func NewHTTP(ctx context.Context, method, url string, body io.Reader, opts ...Op
 }
 
 // Do sends the HTTP request req using the client and returns the response.
-func Do[T error](client *http.Client, req *http.Request) (*http.Response, error) {
+func Do[T error](client *client.HTTP, req *http.Request) (*http.Response, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
