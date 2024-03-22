@@ -7,8 +7,8 @@ import (
 
 // HTTP is a HTTP client.
 type HTTP struct {
-	c  *http.Client
-	rl Limiter
+	client  *http.Client
+	limiter Limiter
 }
 
 // Options are client options
@@ -39,18 +39,20 @@ func NewHTTP(opts ...Option) *HTTP {
 	}
 
 	return &HTTP{
-		c:  options.HTTPClient,
-		rl: options.Limiter,
+		client:  options.HTTPClient,
+		limiter: options.Limiter,
 	}
 }
 
 // Do dispatches the HTTP request to the network
-func (c *HTTP) Do(req *http.Request) (*http.Response, error) {
-	err := c.rl.Wait(req.Context()) // This is a blocking call. Honors the rate limit
-	if err != nil {
-		return nil, err
+func (h *HTTP) Do(req *http.Request) (*http.Response, error) {
+	if h.limiter != nil {
+		err := h.limiter.Wait(req.Context()) // This is a blocking call. Honors the rate limit
+		if err != nil {
+			return nil, err
+		}
 	}
-	resp, err := c.Do(req)
+	resp, err := h.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
