@@ -21,6 +21,8 @@ type Options struct {
 type Option func(*Options)
 
 // Limiter is used to apply rate limits.
+// NOTE: you can use off the shelf limiter from
+// https://pkg.go.dev/golang.org/x/time/rate#Limiter
 type Limiter interface {
 	// Wait must block until limiter
 	// permits another request to proceed.
