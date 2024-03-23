@@ -9,16 +9,15 @@ import (
 // It tries to split text recursively  by different
 // separators to find one that works.
 type RecursiveCharSplitter struct {
-	*Splitter
-	seps       []string
-	isSepRegex bool
+	*CharSplitter
+	seps []Sep
 }
 
 // NewSplitter creates a new splitter and returns it.
 func NewRecursiveCharSplitter() *RecursiveCharSplitter {
 	return &RecursiveCharSplitter{
-		Splitter: NewSplitter(),
-		seps:     DefaultSeparators,
+		CharSplitter: NewCharSplitter(),
+		seps:         DefaultSeparators,
 	}
 }
 
@@ -29,29 +28,28 @@ func (r *RecursiveCharSplitter) WithSplitter(splitter *Splitter) *RecursiveCharS
 }
 
 // WithSeps sets separators
-func (r *RecursiveCharSplitter) WithSeps(seps []string, isSepRegex bool) *RecursiveCharSplitter {
+func (r *RecursiveCharSplitter) WithSeps(seps []Sep) *RecursiveCharSplitter {
 	r.seps = seps
-	r.isSepRegex = isSepRegex
 	return nil
 }
 
-func (r *RecursiveCharSplitter) split(text string, seps []string) []string {
+func (r *RecursiveCharSplitter) split(text string, seps []Sep) []string {
 	var (
 		resChunks []string
-		newSeps   []string
+		newSeps   []Sep
 	)
 
 	sep := seps[len(seps)-1]
 
 	for i, s := range seps {
-		if !r.isSepRegex {
-			s = regexp.QuoteMeta(s)
+		if !s.IsRegexp {
+			s.Value = regexp.QuoteMeta(s.Value)
 		}
-		if s == "" {
+		if s.Value == "" {
 			sep = s
 			break
 		}
-		if match, _ := regexp.MatchString(s, text); match {
+		if match, _ := regexp.MatchString(s.Value, text); match {
 			sep = s
 			newSeps = seps[i+1:]
 			break
@@ -60,15 +58,15 @@ func (r *RecursiveCharSplitter) split(text string, seps []string) []string {
 
 	// TODO should we escape again? Seems weird.
 	newSep := sep
-	if !r.isSepRegex {
-		newSep = regexp.QuoteMeta(sep)
+	if !sep.IsRegexp {
+		newSep.Value = regexp.QuoteMeta(sep.Value)
 	}
 	chunks := r.splitText(text, newSep)
 
 	var goodChunks []string
 
 	if r.keepSep {
-		newSep = ""
+		newSep.Value = ""
 	}
 
 	for _, chunk := range chunks {

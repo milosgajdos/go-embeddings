@@ -10,8 +10,7 @@ import (
 // or a regular expression.
 type CharSplitter struct {
 	*Splitter
-	sep        string
-	isSepRegex bool
+	sep Sep
 }
 
 // NewSplitter creates a new splitter
@@ -30,22 +29,20 @@ func (s *CharSplitter) WithSplitter(splitter *Splitter) *CharSplitter {
 }
 
 // WithSep sets the separator.
-func (s *CharSplitter) WithSep(sep string, isSepRegex bool) *CharSplitter {
+func (s *CharSplitter) WithSep(sep Sep) *CharSplitter {
 	s.sep = sep
-	s.isSepRegex = isSepRegex
-	return nil
+	return s
 }
 
 // Split splits text into chunks.
 func (s *CharSplitter) Split(text string) []string {
 	sep := s.sep
-	if !s.isSepRegex {
-		sep = regexp.QuoteMeta(s.sep)
+	if !s.sep.IsRegexp {
+		sep.Value = regexp.QuoteMeta(sep.Value)
 	}
-	chunks := s.splitText(text, sep)
-	sep = ""
-	if !s.keepSep {
-		sep = s.sep
+	splits := s.splitText(text, sep)
+	if s.keepSep {
+		sep.Value = ""
 	}
-	return s.merge(chunks, sep)
+	return s.merge(splits, sep)
 }

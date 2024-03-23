@@ -5,9 +5,6 @@ import (
 )
 
 const (
-	// DefaultSeparator is default text separator.
-	// It's intention is to splitt by paragraphs.
-	DefaultSeparator = "\n\n"
 	// DefaultChunkSize is default chunk size.
 	DefaultChunkSize = 1
 	// DefaultChunkOverlap is default chunk overlap.
@@ -21,11 +18,25 @@ var (
 	// StringBytesLenFunc counts number of bytes in a string.
 	// Faster for some documents, but less accurate for multiling.
 	StringBytesLenFunc = func(s string) int { return len(s) }
-	// DefaultSeparators are used in RecursiveSplitter.
-	// The splitter recursively keeps splitting document
-	// using the separators until done.
-	DefaultSeparators = []string{"\n\n", "\n", " ", ""}
+	// DefaultSeparator is default text separator.
+	// Its intention is to splitt by paragraphs.
+	DefaultSeparator = Sep{Value: "\n\n"}
+	// DefaultSeparators are used in RecursiveCharSplitter.
+	// RecursiveCharSplitter keeps splitting document
+	// recursively using the separators until done.
+	DefaultSeparators = []Sep{
+		{Value: "\n\n"},
+		{Value: "\n"},
+		{Value: " "},
+		{Value: ""},
+	}
 )
+
+// Sep is a text separator.
+type Sep struct {
+	Value    string
+	IsRegexp bool
+}
 
 // LenFunc is used for funcs that calculate string lengths.
 type LenFunc func(s string) int

@@ -16,8 +16,8 @@ type Splitter struct {
 }
 
 // Config configures the splitter
-// NOTE: this is used to prevent situation
-// where values in constructors accideentally
+// NOTE: this is used to prevent situations
+// where values in constructors accidentally
 // mix the order of parameters of the same type
 // leading to unpredicable behaviour.
 type Config struct {
@@ -36,6 +36,7 @@ func NewSplitter() *Splitter {
 		chunkSize:    DefaultChunkSize,
 		chunkOverlap: DefaultChunkOverlap,
 		lenFunc:      DefaultLenFunc,
+		trimSpace:    true,
 	}
 }
 
@@ -90,23 +91,23 @@ func (s *Splitter) join(chunks []string, sep string) string {
 	return text
 }
 
-// merge merges chunks over the given separator and returns
+// merge merges splits over the given separator and returns
 // the new slice of chunks taking into account chunk overlap.
 // It ignores empty string chunks and warns if a chunk is generated
 // that exceeds the set chunk size.
-func (s *Splitter) merge(chunks []string, sep string) []string {
+func (s *Splitter) merge(splits []string, sep Sep) []string {
 	// nolint:prealloc
 	var (
 		// resulting chunk slice
-		resChunks []string
+		chunks []string
 		// buffer of chunks
 		chunkBuffer []string
 	)
 
 	totalChunksLen := 0
-	sepLen := s.lenFunc(sep)
+	sepLen := s.lenFunc(sep.Value)
 
-	for _, chunk := range chunks {
+	for _, chunk := range splits {
 		if chunk == "" {
 			continue
 		}
@@ -115,12 +116,12 @@ func (s *Splitter) merge(chunks []string, sep string) []string {
 		// if it does and if the buffer contains any chunks, we'll pop them add them into resulting chunk set.
 		if totalChunksLen+splitLen+(sepLen*boolToInt(len(chunkBuffer) > 0)) > s.chunkSize {
 			if totalChunksLen > s.chunkSize {
-				log.Printf("Created a chunk of size %d, which is longer than the requested %d\n", totalChunksLen, s.chunkSize)
+				log.Printf("created chunk is longer (%d) than requested: %d\n", totalChunksLen, s.chunkSize)
 			}
 			if len(chunkBuffer) > 0 {
-				doc := s.join(chunkBuffer, sep)
+				doc := s.join(chunkBuffer, sep.Value)
 				if doc != "" {
-					resChunks = append(resChunks, doc)
+					chunks = append(chunks, doc)
 				}
 				// Keep on popping chunks from the bffer if:
 				// - we have a larger chunk than in the chunk overlap
@@ -138,36 +139,36 @@ func (s *Splitter) merge(chunks []string, sep string) []string {
 		totalChunksLen += splitLen + sepLen*boolToInt(len(chunkBuffer) > 1)
 	}
 
-	chunk := s.join(chunkBuffer, sep)
+	chunk := s.join(chunkBuffer, sep.Value)
 	if chunk != "" {
-		resChunks = append(resChunks, chunk)
+		chunks = append(chunks, chunk)
 	}
 
-	return resChunks
+	return chunks
 }
 
 // splitText splits the text over a separator optionally keeping
 // the separator and returns the the chunks in a slice.
 // If the separator is empty string it splits on individual characters.
-func (s *Splitter) splitText(text string, sep string) []string {
-	if sep != "" {
+// TODO: rename this to Split
+func (s *Splitter) splitText(text string, sep Sep) []string {
+	if sep.Value != "" {
 		if s.keepSep {
 			var results []string
-			re := regexp.MustCompile("(" + sep + ")")
-			splits := re.Split(text, -1)
+			splits := regexp.MustCompile("("+sep.Value+")").Split(text, -1)
+			// NOTE: we start iterating from 1, not 0!
 			for i := 1; i < len(splits); i++ {
 				// make sure the separator remains in the result split
 				// because Go reasons: https://github.com/golang/go/issues/18868
-				results = append(results, sep+splits[i])
+				results = append(results, sep.Value+splits[i])
 			}
 			results = append([]string{splits[0]}, results...)
-			return results
+			return filterEmptyStrings(results)
 		}
-		re := regexp.MustCompile(sep)
-		return re.Split(text, -1)
+		return filterEmptyStrings(regexp.MustCompile(sep.Value).Split(text, -1))
 	}
 	// If separator is empty, split into individual characters.
-	return strings.Split(text, "")
+	return filterEmptyStrings(strings.Split(text, ""))
 }
 
 // boolToInt returns 1 if b is true
@@ -177,4 +178,24 @@ func boolToInt(b bool) int {
 		return 1
 	}
 	return 0
+}
+
+// filterEmptyStrings removes empty strings from a slice of strings.
+func filterEmptyStrings(slice []string) []string {
+	count := 0
+	for _, s := range slice {
+		if s != "" {
+			count++
+		}
+	}
+
+	result := make([]string, 0, count)
+
+	for _, s := range slice {
+		if s != "" {
+			result = append(result, s)
+		}
+	}
+
+	return result
 }
