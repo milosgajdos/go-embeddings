@@ -52,6 +52,21 @@ func TestCharSplitter(t *testing.T) {
 			input:   "foo bar baz 123",
 			exp:     []string{"foo", "bar", "baz", "123"},
 		},
+		{
+			size:    1,
+			overlap: 0,
+			keepSep: true,
+			sep:     Sep{Value: ".", IsRegexp: false},
+			input:   "foo.bar.baz.123",
+			exp:     []string{"foo", ".bar", ".baz", ".123"},
+		},
+		{
+			size:    1,
+			overlap: 0,
+			sep:     Sep{Value: ".", IsRegexp: false},
+			input:   "foo.bar.baz.123",
+			exp:     []string{"foo", "bar", "baz", "123"},
+		},
 	}
 
 	for _, tc := range testCases {

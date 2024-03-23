@@ -36,8 +36,8 @@ func (s *CharSplitter) WithSep(sep Sep) *CharSplitter {
 
 // Split splits text into chunks.
 func (s *CharSplitter) Split(text string) []string {
-	sep := s.sep
-	if !s.sep.IsRegexp {
+	sep := Sep{Value: s.sep.Value, IsRegexp: s.sep.IsRegexp}
+	if !sep.IsRegexp {
 		sep.Value = regexp.QuoteMeta(sep.Value)
 	}
 	splits := s.splitText(text, sep)

@@ -1,8 +1,10 @@
 package text
 
 import (
+	"errors"
 	"log"
 	"regexp"
+	"regexp/syntax"
 	"strings"
 )
 
@@ -154,13 +156,19 @@ func (s *Splitter) merge(splits []string, sep Sep) []string {
 func (s *Splitter) splitText(text string, sep Sep) []string {
 	if sep.Value != "" {
 		if s.keepSep {
+			sepVal := sep.Value
+			if !sep.IsRegexp {
+				// NOTE: we must do this to unescape
+				// the escaped separator
+				sepVal, _ = unquoteMeta(sep.Value)
+			}
 			var results []string
 			splits := regexp.MustCompile("("+sep.Value+")").Split(text, -1)
 			// NOTE: we start iterating from 1, not 0!
 			for i := 1; i < len(splits); i++ {
 				// make sure the separator remains in the result split
 				// because Go reasons: https://github.com/golang/go/issues/18868
-				results = append(results, sep.Value+splits[i])
+				results = append(results, sepVal+splits[i])
 			}
 			results = append([]string{splits[0]}, results...)
 			return filterEmptyStrings(results)
@@ -198,4 +206,16 @@ func filterEmptyStrings(slice []string) []string {
 	}
 
 	return result
+}
+
+// unQuote regexp string
+func unquoteMeta(s string) (string, error) {
+	r, err := syntax.Parse(s, 0)
+	if err != nil {
+		return "", err
+	}
+	if r.Op != syntax.OpLiteral {
+		return "", errors.New("not a quoted meta")
+	}
+	return string(r.Rune), nil
 }
