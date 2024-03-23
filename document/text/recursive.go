@@ -9,28 +9,28 @@ import (
 // It tries to split text recursively  by different
 // separators to find one that works.
 type RecursiveCharSplitter struct {
-	*CharSplitter
+	*Splitter
 	seps []Sep
 }
 
 // NewSplitter creates a new splitter and returns it.
 func NewRecursiveCharSplitter() *RecursiveCharSplitter {
 	return &RecursiveCharSplitter{
-		CharSplitter: NewCharSplitter(),
-		seps:         DefaultSeparators,
+		Splitter: NewSplitter(),
+		seps:     DefaultSeparators,
 	}
 }
 
-// WithSplitter sets the splitter
+// WithSplitter sets the splitter.
 func (r *RecursiveCharSplitter) WithSplitter(splitter *Splitter) *RecursiveCharSplitter {
 	r.Splitter = splitter
 	return r
 }
 
-// WithSeps sets separators
+// WithSeps sets separators.
 func (r *RecursiveCharSplitter) WithSeps(seps []Sep) *RecursiveCharSplitter {
 	r.seps = seps
-	return nil
+	return r
 }
 
 func (r *RecursiveCharSplitter) split(text string, seps []Sep) []string {
@@ -57,11 +57,11 @@ func (r *RecursiveCharSplitter) split(text string, seps []Sep) []string {
 	}
 
 	// TODO should we escape again? Seems weird.
-	newSep := sep
+	newSep := Sep{Value: sep.Value, IsRegexp: sep.IsRegexp}
 	if !sep.IsRegexp {
 		newSep.Value = regexp.QuoteMeta(sep.Value)
 	}
-	chunks := r.splitText(text, newSep)
+	chunks := r.Splitter.Split(text, newSep)
 
 	var goodChunks []string
 

@@ -149,17 +149,19 @@ func (s *Splitter) merge(splits []string, sep Sep) []string {
 	return chunks
 }
 
-// splitText splits the text over a separator optionally keeping
+// Split splits the text over a separator optionally keeping
 // the separator and returns the the chunks in a slice.
 // If the separator is empty string it splits on individual characters.
 // TODO: rename this to Split
-func (s *Splitter) splitText(text string, sep Sep) []string {
+func (s *Splitter) Split(text string, sep Sep) []string {
 	if sep.Value != "" {
 		if s.keepSep {
-			sepVal := sep.Value
 			// NOTE: we must do this to unescape
 			// the escaped separator so we keep the raw separator.
-			sepVal, _ = unquoteMeta(sep.Value)
+			sepVal, err := unquoteMeta(sep.Value)
+			if err != nil {
+				panic(err)
+			}
 
 			var results []string
 			splits := regexp.MustCompile("("+sep.Value+")").Split(text, -1)
@@ -207,7 +209,7 @@ func filterEmptyStrings(slice []string) []string {
 	return result
 }
 
-// unQuote regexp string
+// unQuote regexp string.
 func unquoteMeta(s string) (string, error) {
 	r, err := syntax.Parse(s, 0)
 	if err != nil {

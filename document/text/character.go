@@ -40,7 +40,7 @@ func (s *CharSplitter) Split(text string) []string {
 	if !sep.IsRegexp {
 		sep.Value = regexp.QuoteMeta(sep.Value)
 	}
-	splits := s.splitText(text, sep)
+	splits := s.Splitter.Split(text, sep)
 	if s.keepSep {
 		sep.Value = ""
 	}
