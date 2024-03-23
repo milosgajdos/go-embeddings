@@ -157,11 +157,10 @@ func (s *Splitter) splitText(text string, sep Sep) []string {
 	if sep.Value != "" {
 		if s.keepSep {
 			sepVal := sep.Value
-			if !sep.IsRegexp {
-				// NOTE: we must do this to unescape
-				// the escaped separator
-				sepVal, _ = unquoteMeta(sep.Value)
-			}
+			// NOTE: we must do this to unescape
+			// the escaped separator so we keep the raw separator.
+			sepVal, _ = unquoteMeta(sep.Value)
+
 			var results []string
 			splits := regexp.MustCompile("("+sep.Value+")").Split(text, -1)
 			// NOTE: we start iterating from 1, not 0!
