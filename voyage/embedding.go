@@ -1,4 +1,4 @@
-package openai
+package voyage
 
 import (
 	"bytes"
@@ -12,10 +12,13 @@ import (
 	"github.com/milosgajdos/go-embeddings/request"
 )
 
-// Usage tracks API token usage.
-type Usage struct {
-	PromptTokens int `json:"prompt_tokens"`
-	TotalTokens  int `json:"total_tokens"`
+// EmbeddingRequest sent to API endpoint.
+type EmbeddingRequest struct {
+	Input          []string       `json:"input"`
+	Model          Model          `json:"model"`
+	InputType      InputType      `json:"input_type,omitempty"`
+	EncodingFormat EncodingFormat `json:"encoding_format,omitempty"`
+	Truncation     bool           `json:"truncation,omitempty"`
 }
 
 // Data stores vector embeddings.
@@ -48,14 +51,9 @@ func (e *EmbeddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
 	return embs, nil
 }
 
-// EmbeddingRequest is serialized and sent to the API server.
-type EmbeddingRequest struct {
-	Input          any            `json:"input"`
-	Model          Model          `json:"model"`
-	User           string         `json:"user"`
-	EncodingFormat EncodingFormat `json:"encoding_format,omitempty"`
-	// NOTE: only supported in V3 and later
-	Dims int `json:"dimensions,omitempty"`
+// Usage tracks API token usage.
+type Usage struct {
+	TotalTokens int `json:"total_tokens"`
 }
 
 // DataGen is a generic struct used for deserializing vector embeddings.
@@ -134,9 +132,6 @@ func (c *Client) Embed(ctx context.Context, embReq *EmbeddingRequest) ([]*embedd
 	options := []request.Option{
 		request.WithBearer(c.opts.APIKey),
 	}
-	if c.opts.OrgID != "" {
-		options = append(options, request.WithSetHeader(OrgHeader, c.opts.OrgID))
-	}
 
 	req, err := request.NewHTTP(ctx, http.MethodPost, u.String(), body, options...)
 	if err != nil {
@@ -154,7 +149,7 @@ func (c *Client) Embed(ctx context.Context, embReq *EmbeddingRequest) ([]*embedd
 	switch embReq.EncodingFormat {
 	case EncodingBase64:
 		embs, err = toEmbeddingResp[EmbeddingResponseGen[embeddings.Base64]](resp.Body)
-	case EncodingFloat:
+	case EncodingNone, "":
 		embs, err = toEmbeddingResp[EmbeddingResponseGen[[]float64]](resp.Body)
 	default:
 		return nil, ErrUnsupportedEncoding
