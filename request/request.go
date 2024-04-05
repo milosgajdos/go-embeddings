@@ -62,7 +62,7 @@ func Do[T error](client *client.HTTP, req *http.Request) (*http.Response, error)
 	return nil, apiErr
 }
 
-// Option is http requestion functional option.
+// Option is http request functional option.
 type Option func(*http.Request)
 
 // WithBearer sets the Authorization header to the provided Bearer token.
@@ -92,6 +92,5 @@ func WithAddHeader(key, val string) Option {
 			req.Header = make(http.Header)
 		}
 		req.Header.Add(key, val)
-		fmt.Println(req.Header)
 	}
 }

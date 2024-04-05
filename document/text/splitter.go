@@ -152,7 +152,6 @@ func (s *Splitter) merge(splits []string, sep Sep) []string {
 // Split splits the text over a separator optionally keeping
 // the separator and returns the the chunks in a slice.
 // If the separator is empty string it splits on individual characters.
-// TODO: rename this to Split
 func (s *Splitter) Split(text string, sep Sep) []string {
 	if sep.Value != "" {
 		if s.keepSep {
