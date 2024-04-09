@@ -9,9 +9,12 @@ const (
 	// https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning#latest-version
 	EmbedGeckoV1     Model = "textembedding-gecko@001"
 	EmbedGeckoV2     Model = "textembedding-gecko@002"
+	EmbedGeckoV3     Model = "textembedding-gecko@003"
 	EmbedGeckoLatest Model = "textembedding-gecko@latest"
+	EmbedV4PreviewV4 Model = "text-embedding-preview-0409"
 	// EmbedMultiGecko is a multilanguage embeddings model
-	EmbedMultiGecko Model = "multimodalembedding@001"
+	EmbedMultiGecko     Model = "multimodalembedding@001"
+	EmbedMultiPreviewV4 Model = "text-multilingual-embedding-preview-0409"
 )
 
 // String implements stringer.
