@@ -8,9 +8,10 @@ This project provides an implementation of API clients for fetching embeddings f
 
 Currently supported APIs:
 * [x] [OpenAI](https://platform.openai.com/docs/api-reference/embeddings)
-* [x] [Cohere AI](https://docs.cohere.com/reference/embed)
-* [x] [Google Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
+* [x] [Cohere](https://docs.cohere.com/reference/embed)
+* [x] [Google Vertex](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
 * [x] [VoyageAI](https://docs.voyageai.com/reference/embeddings-api)
+* [x] [Ollama](https://ollama.com/)
 
 You can find sample programs that demonstrate how to use the client packages to fetch the embeddings in `cmd` directory of this project.
 
@@ -19,7 +20,10 @@ It's essentially a Go rewrite of character and recursive character text splitter
 
 ## Environment variables
 
-Each client package lets you initialize a default API client for a specific embeddings provider by reading the API keys from environment variables.
+> [!NOTE]
+> Each client package lets you initialize a default API client for a specific embeddings provider by reading the API keys from environment variables
+
+Here's a list of the env vars for each supported client
 
 ### OpenAI
 
@@ -35,6 +39,10 @@ Each client package lets you initialize a default API client for a specific embe
 * `VERTEXAI_MODEL_ID`: Embeddings model (at the moment only `textembedding-gecko@00` or `multimodalembedding@001` are available)
 * `GOOGLE_PROJECT_ID`: Google Project ID
 * `VOYAGE_API_KEY`: VoyageAI API key
+
+### Voyage
+
+* `VOYAGE_API_KEY`: Voyage AI API key
 
 ## nix
 
