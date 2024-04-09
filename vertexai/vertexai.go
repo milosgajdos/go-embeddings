@@ -11,7 +11,7 @@ const (
 	EmbedGeckoV2     Model = "textembedding-gecko@002"
 	EmbedGeckoV3     Model = "textembedding-gecko@003"
 	EmbedGeckoLatest Model = "textembedding-gecko@latest"
-	EmbedV4PreviewV4 Model = "text-embedding-preview-0409"
+	EmbedPreviewV4   Model = "text-embedding-preview-0409"
 	// EmbedMultiGecko is a multilanguage embeddings model
 	EmbedMultiGecko     Model = "multimodalembedding@001"
 	EmbedMultiPreviewV4 Model = "text-multilingual-embedding-preview-0409"
