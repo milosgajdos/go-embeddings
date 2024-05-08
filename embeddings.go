@@ -32,7 +32,7 @@ func (e Embedding) ToFloat32() []float32 {
 type Base64 string
 
 // Decode decodes base64 encoded string into a slice of floats.
-func (s Base64) Decode() ([]float64, error) {
+func (s Base64) Decode() (*Embedding, error) {
 	decoded, err := base64.StdEncoding.DecodeString(string(s))
 	if err != nil {
 		return nil, err
@@ -49,5 +49,7 @@ func (s Base64) Decode() ([]float64, error) {
 		floats[i] = math.Float64frombits(bits)
 	}
 
-	return floats, nil
+	return &Embedding{
+		Vector: floats,
+	}, nil
 }

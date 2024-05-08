@@ -5,7 +5,7 @@ linters:
     - gofmt
     - revive
     - ineffassign
-    - vet
+    - govet
     - unused
     - misspell
     - bodyclose
@@ -22,7 +22,7 @@ linters:
     - unconvert
     - whitespace
 
-run:
+issues:
   deadline: 2m
-  skip-dirs:
+  exlude-dirs:
     - vendor

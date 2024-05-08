@@ -61,8 +61,8 @@ func TestBase64Decode(t *testing.T) {
 			if tc.wantErr {
 				t.Fatal("expected error")
 			}
-			if !reflect.DeepEqual(got, tc.exp) {
-				t.Fatalf("expected: %v, got: %v", tc.exp, got)
+			if !reflect.DeepEqual(got.Vector, tc.exp) {
+				t.Fatalf("expected: %v, got: %v", tc.exp, got.Vector)
 			}
 		})
 	}
