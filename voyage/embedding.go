@@ -83,14 +83,14 @@ func toEmbeddingResp[T any](resp io.Reader) (*EmbeddingResponse, error) {
 	case *EmbeddingResponseGen[embeddings.Base64]:
 		embData := make([]Data, 0, len(e.Data))
 		for _, d := range e.Data {
-			floats, err := d.Embedding.Decode()
+			emb, err := d.Embedding.Decode()
 			if err != nil {
 				return nil, err
 			}
 			embData = append(embData, Data{
 				Object:    d.Object,
 				Index:     d.Index,
-				Embedding: floats,
+				Embedding: emb.Vector,
 			})
 		}
 		return &EmbeddingResponse{
