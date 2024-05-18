@@ -12,6 +12,7 @@ Currently supported APIs:
 * [x] [Google Vertex](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings)
 * [x] [VoyageAI](https://docs.voyageai.com/reference/embeddings-api)
 * [x] [Ollama](https://ollama.com/)
+* [x] [AWS Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html)
 
 You can find sample programs that demonstrate how to use the client packages to fetch the embeddings in `cmd` directory of this project.
 
