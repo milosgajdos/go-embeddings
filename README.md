@@ -44,6 +44,16 @@ Here's a list of the env vars for each supported client
 
 * `VOYAGE_API_KEY`: Voyage AI API key
 
+### AWS Bedrock
+
+> [!IMPORTANT]
+> You must enable access to Bedrock embedding models
+> See here: [https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html#add-model-access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html#add-model-access)
+
+* `AWS_REGION`: AWS region
+
+Usual AWS env vars as read by the AWS SDKs i.e. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, etc.
+
 ## nix
 
 The project provides a simple `nix` flake tha leverages [gomod2nix](https://github.com/nix-community/gomod2nix) for consistent Go environments and builds.
