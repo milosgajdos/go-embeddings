@@ -27,7 +27,7 @@ type Options struct {
 	HTTPClient *client.HTTP
 }
 
-// Option is functional graph option.
+// Option is functional option.
 type Option func(*Options)
 
 // NewClient creates a new HTTP API client and returns it.

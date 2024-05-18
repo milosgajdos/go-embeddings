@@ -10,7 +10,7 @@ import (
 
 const (
 	vertexaiToken   = "token"
-	vertexaiMoel    = "model"
+	vertexaiModel   = "model"
 	googleProjectID = "project"
 )
 
@@ -24,7 +24,7 @@ func (t *ts) Token() (*oauth2.Token, error) {
 
 func TestClient(t *testing.T) {
 	t.Setenv("VERTEXAI_TOKEN", vertexaiToken)
-	t.Setenv("VERTEXAI_MODEL_ID", vertexaiMoel)
+	t.Setenv("VERTEXAI_MODEL_ID", vertexaiModel)
 	t.Setenv("GOOGLE_PROJECT_ID", googleProjectID)
 
 	t.Run("token", func(t *testing.T) {
@@ -56,11 +56,11 @@ func TestClient(t *testing.T) {
 
 	t.Run("model id", func(t *testing.T) {
 		c := NewClient()
-		assert.Equal(t, c.opts.ModelID, vertexaiMoel)
+		assert.Equal(t, c.opts.ModelID, vertexaiModel)
 
 		testVal := "id"
-		c = NewClient(WithProjectID(testVal))
-		assert.Equal(t, c.opts.ModelID, vertexaiMoel)
+		c = NewClient(WithModelID(testVal))
+		assert.Equal(t, c.opts.ModelID, testVal)
 	})
 
 	t.Run("BaseURL", func(t *testing.T) {
