@@ -17,14 +17,14 @@ type EmbeddingRequest struct {
 	Model  string `json:"model"`
 }
 
-// EmbedddingResponse received from API.
-type EmbedddingResponse struct {
+// EmbeddingResponse received from API.
+type EmbeddingResponse struct {
 	Embedding []float64 `json:"embedding"`
 }
 
 // ToEmbeddings converts the API response,
 // into a slice of embeddings and returns it.
-func (e *EmbedddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
+func (e *EmbeddingResponse) ToEmbeddings() ([]*embeddings.Embedding, error) {
 	floats := make([]float64, len(e.Embedding))
 	copy(floats, e.Embedding)
 	return []*embeddings.Embedding{
@@ -58,7 +58,7 @@ func (c *Client) Embed(ctx context.Context, embReq *EmbeddingRequest) ([]*embedd
 	}
 	defer resp.Body.Close()
 
-	e := new(EmbedddingResponse)
+	e := new(EmbeddingResponse)
 	if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
 		return nil, err
 	}
