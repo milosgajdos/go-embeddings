@@ -18,7 +18,7 @@ linters:
     - errname
     - gocritic
     - tparallel
-    - tenv
+    - usetesting
     - unconvert
     - whitespace
 
